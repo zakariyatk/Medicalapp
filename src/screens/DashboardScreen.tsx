@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Animated } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Animated } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Avatar } from "../components/ui";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
-import { BellIcon, PlusIcon, CheckIcon, CapsuleIcon, TabletIcon, SachetIcon } from "../components/icons";
-import { colors, type, shadow } from "../theme";
+import { CheckIcon, ChevronRightIcon } from "../components/icons";
+import { colors } from "../theme";
 import { familyMembers, medicines, prescriptions, initialDoses } from "../data/mockData";
 
 type Props = CompositeScreenProps<
@@ -16,301 +17,309 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
+const ink = "#0D0D0D";
+const grey = "#8A8A8A";
+const faint = "#B8B8B8";
+const hairline = "#EDEDED";
+const track = "#F2F2F2";
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function todayLabel(d = new Date()) {
+  return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`.toUpperCase();
+}
+
+/** "9:30 PM" → { clock: "9:30", period: "PM" } */
+function splitTime(time: string) {
+  const [clock, period = ""] = time.split(" ");
+  return { clock, period };
+}
+
 export default function DashboardScreen({ navigation }: Props) {
   const [doses, setDoses] = useState(initialDoses);
   const toggleDose = (id: string) =>
     setDoses((prev) => prev.map((d) => (d.id === id ? { ...d, taken: !d.taken } : d)));
 
+  const me = familyMembers[0];
+  const left = doses.filter((d) => !d.taken).length;
+
+  // One ring per family member who has medicine today, in the order their first dose appears.
+  const progress = useMemo(() => {
+    const ids = [...new Set(doses.map((d) => d.memberId))];
+    return ids.map((id) => {
+      const member = familyMembers.find((m) => m.id === id);
+      const mine = doses.filter((d) => d.memberId === id);
+      return {
+        id,
+        name: id === me.id ? "You" : (member?.name.split(" ")[0] ?? "—"),
+        color: member?.color ?? colors.primary,
+        taken: mine.filter((d) => d.taken).length,
+        total: mine.length,
+      };
+    });
+  }, [doses, me.id]);
+
   const recent = prescriptions.slice(0, 2);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         <FadeInUp>
           <View style={styles.topRow}>
-            <View>
-              <Text style={styles.greetSmall}>Good morning</Text>
-              <Text style={styles.greetName}>Harish Sakariya</Text>
+            <Text style={styles.date}>{todayLabel()}</Text>
+            <Pressable accessibilityLabel="Your profile" onPress={() => navigation.navigate("Profile")}>
+              <Avatar initials={me.initials} color={ink} size={34} />
+            </Pressable>
+          </View>
+
+          <Text style={styles.headline} accessibilityRole="header">
+            {left === 0 ? "All done" : `${left} ${left === 1 ? "dose" : "doses"}`}
+            {"\n"}
+            <Text style={styles.headlineFaint}>{left === 0 ? "for today." : "left today."}</Text>
+          </Text>
+        </FadeInUp>
+
+        <FadeInUp delay={80}>
+          <View style={styles.ringRow}>
+            <ProgressRings rings={progress} />
+            <View style={styles.legend}>
+              {progress.map((p) => (
+                <View key={p.id} style={styles.legendRow}>
+                  <View style={[styles.legendDot, { backgroundColor: p.color }]} />
+                  <Text style={styles.legendName}>{p.name}</Text>
+                  <Text style={styles.legendCount}>
+                    {p.taken}/{p.total}
+                  </Text>
+                </View>
+              ))}
             </View>
-            <TouchableOpacity accessibilityLabel="Notifications" style={styles.bellBtn}>
-              <BellIcon />
-              <View style={styles.bellDot} />
-            </TouchableOpacity>
           </View>
         </FadeInUp>
 
-        <FadeInUp delay={60}>
-          <View style={styles.memberRow}>
-            {familyMembers.slice(0, 4).map((m) => (
-              <AnimatedPressable
-                key={m.id}
-                style={styles.memberChip}
-                onPress={() => navigation.navigate("MemberProfile", { memberId: m.id })}
-              >
-                <Avatar initials={m.initials} color={m.color} />
-                <Text style={styles.memberChipLabel}>{m.id === "harish" ? "You" : m.name.split(" ")[0]}</Text>
-              </AnimatedPressable>
-            ))}
-            <AnimatedPressable
-              accessibilityLabel="Add family member"
-              style={styles.memberChip}
-              onPress={() => navigation.navigate("FamilyMembers")}
-            >
-              <View style={styles.addChip}>
-                <PlusIcon color={colors.textFaint} />
-              </View>
-              <Text style={[styles.memberChipLabel, { color: colors.textFaint }]}>Add</Text>
-            </AnimatedPressable>
-          </View>
-        </FadeInUp>
-
-        <FadeInUp delay={120}>
-          <View style={styles.statsRow}>
-            <Card style={styles.statCard}>
-              <Text style={[styles.statNum, { color: colors.primary }]}>{familyMembers.length}</Text>
-              <Text style={styles.statLabel}>Family members</Text>
-            </Card>
-            <Card style={styles.statCard}>
-              <Text style={[styles.statNum, { color: colors.primary }]}>{prescriptions.length}</Text>
-              <Text style={styles.statLabel}>Active prescriptions</Text>
-            </Card>
-            <Card style={styles.statCard}>
-              <Text style={[styles.statNum, { color: colors.amber }]}>{doses.filter((d) => !d.taken).length}</Text>
-              <Text style={styles.statLabel}>Doses due today</Text>
-            </Card>
-          </View>
-        </FadeInUp>
-
-        <View style={styles.sectionHeader}>
-          <Text style={type.h2}>Today’s medicines</Text>
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Today</Text>
+          <Text style={styles.sectionMeta}>
+            {doses.length - left} of {doses.length} taken
+          </Text>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
+        <View style={styles.list}>
           {doses.map((d, i) => {
             const med = medicines[d.medicineId];
             const member = familyMembers.find((m) => m.id === d.memberId);
             return (
-              <MedicineDoseCard
-                key={d.id}
-                medicineName={med.name}
-                medicineId={d.medicineId}
-                memberFirstName={member?.name.split(" ")[0] ?? "—"}
-                memberInitials={member?.initials ?? "?"}
-                dosage={med.dosage}
-                time={d.time}
-                color={member?.color ?? colors.primary}
-                taken={d.taken}
-                delay={180 + i * 90}
-                onPress={() => toggleDose(d.id)}
-              />
+              <FadeInUp key={d.id} delay={140 + i * 70}>
+                <DoseRow
+                  time={d.time}
+                  name={med.name}
+                  detail={`${member?.name.split(" ")[0] ?? "—"} · ${med.dosage}`}
+                  taken={d.taken}
+                  onToggle={() => toggleDose(d.id)}
+                  onOpen={() => navigation.navigate("MedicineDetail", { medicineId: d.medicineId, memberId: d.memberId })}
+                />
+              </FadeInUp>
             );
           })}
-          <View style={{ width: 20 }} />
-        </ScrollView>
-
-        <View style={styles.sectionHeader}>
-          <Text style={type.h2}>Recent prescriptions</Text>
         </View>
-        <FadeInUp delay={180 + doses.length * 90 + 80}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
-            {recent.map((rx) => (
-              <AnimatedPressable key={rx.id} onPress={() => navigation.navigate("PrescriptionDetail", { prescriptionId: rx.id })}>
-                <Card style={styles.rxCard}>
-                  <Text style={styles.rxDate}>{rx.date.toUpperCase()}</Text>
-                  <Text style={styles.rxDoctor}>{rx.doctorName}</Text>
-                  <Text style={styles.rxSub}>
-                    {rx.hospital.split(",")[0]} · {familyMembers.find((m) => m.id === rx.memberId)?.name.split(" ")[0]}
-                  </Text>
-                  <Text style={styles.rxMeds}>{rx.medicineIds.length} medicines</Text>
-                </Card>
-              </AnimatedPressable>
-            ))}
-            <View style={{ width: 20 }} />
-          </ScrollView>
+
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Recent prescriptions</Text>
+          <Pressable onPress={() => navigation.navigate("Records")} hitSlop={8}>
+            <Text style={styles.link}>See all</Text>
+          </Pressable>
+        </View>
+        <FadeInUp delay={140 + doses.length * 70 + 60}>
+          <View style={styles.list}>
+            {recent.map((rx) => {
+              const member = familyMembers.find((m) => m.id === rx.memberId);
+              const [day, month] = rx.date.split(" ");
+              return (
+                <AnimatedPressable
+                  key={rx.id}
+                  scaleTo={0.98}
+                  style={styles.row}
+                  onPress={() => navigation.navigate("PrescriptionDetail", { prescriptionId: rx.id })}
+                >
+                  <View style={styles.timeCol}>
+                    <Text style={styles.timeBig}>{day}</Text>
+                    <Text style={styles.timeSmall}>{month?.toUpperCase()}</Text>
+                  </View>
+                  <View style={styles.rowBody}>
+                    <Text style={styles.rowTitle}>{rx.doctorName}</Text>
+                    <Text style={styles.rowSub} numberOfLines={1}>
+                      {rx.hospital.split(",")[0]} · {member?.name.split(" ")[0]} · {rx.medicineIds.length} {rx.medicineIds.length === 1 ? "medicine" : "medicines"}
+                    </Text>
+                  </View>
+                  <ChevronRightIcon color={faint} />
+                </AnimatedPressable>
+              );
+            })}
+          </View>
         </FadeInUp>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function MedicineIcon({ medicineId, size, color }: { medicineId: string; size: number; color: string }) {
-  if (medicineId === "paracetamol") return <TabletIcon size={size} color={color} />;
-  if (medicineId === "ors") return <SachetIcon size={size} color={color} />;
-  return <CapsuleIcon size={size} color={color} />;
+type Ring = { id: string; color: string; taken: number; total: number };
+
+function ProgressRings({ rings }: { rings: Ring[] }) {
+  const size = 96;
+  const stroke = 8;
+  const gap = 4;
+  const c = size / 2;
+  return (
+    <Svg width={size} height={size} accessibilityLabel="Doses taken per family member">
+      {rings.slice(0, 3).map((r, i) => {
+        const radius = c - stroke / 2 - i * (stroke + gap);
+        const circumference = 2 * Math.PI * radius;
+        // A zero-length arc with round caps draws a dot, which marks the start of an empty ring.
+        const arc = r.total ? (r.taken / r.total) * circumference : 0;
+        return (
+          <React.Fragment key={r.id}>
+            <Circle cx={c} cy={c} r={radius} stroke={track} strokeWidth={stroke} fill="none" />
+            <Circle
+              cx={c}
+              cy={c}
+              r={radius}
+              stroke={r.color}
+              strokeWidth={stroke}
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray={`${Math.max(arc, 0.01)} ${circumference}`}
+              transform={`rotate(-90 ${c} ${c})`}
+            />
+          </React.Fragment>
+        );
+      })}
+    </Svg>
+  );
 }
 
-function MedicineDoseCard({
-  medicineName,
-  medicineId,
-  memberFirstName,
-  memberInitials,
-  dosage,
+function DoseRow({
   time,
-  color,
+  name,
+  detail,
   taken,
-  delay = 0,
-  onPress,
+  onToggle,
+  onOpen,
 }: {
-  medicineName: string;
-  medicineId: string;
-  memberFirstName: string;
-  memberInitials: string;
-  dosage: string;
   time: string;
-  color: string;
+  name: string;
+  detail: string;
   taken: boolean;
-  delay?: number;
-  onPress: () => void;
+  onToggle: () => void;
+  onOpen: () => void;
 }) {
-  const [pop] = useState(() => new Animated.Value(0));
-  const [checkPop] = useState(() => new Animated.Value(taken ? 1 : 0));
+  const { clock, period } = splitTime(time);
+  const [fill] = useState(() => new Animated.Value(taken ? 1 : 0));
 
   useEffect(() => {
-    const anim = Animated.spring(pop, { toValue: 1, useNativeDriver: true, delay, speed: 14, bounciness: 8 });
-    anim.start();
-    return () => anim.stop();
-  }, [pop, delay]);
-
-  useEffect(() => {
-    Animated.spring(checkPop, { toValue: taken ? 1 : 0, useNativeDriver: true, speed: 26, bounciness: 10 }).start();
-  }, [taken, checkPop]);
+    Animated.spring(fill, { toValue: taken ? 1 : 0, useNativeDriver: true, speed: 24, bounciness: 10 }).start();
+  }, [taken, fill]);
 
   return (
-    <Animated.View
-      style={{
-        opacity: pop,
-        transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }],
-      }}
-    >
-      <AnimatedPressable onPress={onPress} style={styles.medCard}>
-        <View style={[styles.medCardArt, { backgroundColor: `${color}1F` }]}>
-          <View style={styles.medCardIndex}>
-            <Text style={[styles.medCardIndexLabel, { color }]}>{memberInitials}</Text>
-            <MedicineIcon medicineId={medicineId} size={12} color={color} />
-          </View>
-          <MedicineIcon medicineId={medicineId} size={44} color={color} />
-          <Animated.View style={[styles.medCardCheckOverlay, { opacity: checkPop }]}>
-            <View style={styles.medCardCheckDot}>
-              <CheckIcon size={16} color="#fff" />
-            </View>
-          </Animated.View>
+    <View style={styles.row}>
+      <Pressable style={styles.rowMain} onPress={onOpen} accessibilityRole="button" accessibilityLabel={`${name}, ${time}`}>
+        <View style={styles.timeCol}>
+          <Text style={[styles.timeBig, taken && { color: faint }]}>{clock}</Text>
+          <Text style={styles.timeSmall}>{period}</Text>
         </View>
-        <View style={styles.medCardBody}>
-          <Text style={styles.medCardName} numberOfLines={2}>
-            {medicineName}
-          </Text>
-          <Text style={styles.medCardSub}>
-            {memberFirstName} · {dosage}
-          </Text>
-          <Text style={styles.medCardTime}>{time}</Text>
+        <View style={styles.rowBody}>
+          <Text style={[styles.rowTitle, taken && styles.rowTitleDone]}>{name}</Text>
+          <Text style={styles.rowSub}>{detail}</Text>
         </View>
-      </AnimatedPressable>
-    </Animated.View>
+      </Pressable>
+      <Pressable
+        onPress={onToggle}
+        hitSlop={10}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: taken }}
+        accessibilityLabel={taken ? `Mark ${name} as not taken` : `Mark ${name} as taken`}
+        style={styles.tick}
+      >
+        <Animated.View style={[styles.tickFill, { opacity: fill, transform: [{ scale: fill }] }]}>
+          <CheckIcon size={13} color="#fff" />
+        </Animated.View>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: "#FFFFFF" },
   topRow: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingHorizontal: 24,
+    paddingTop: 14,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "space-between",
   },
-  greetSmall: { fontSize: 13, color: colors.textMuted },
-  greetName: { fontSize: 21, fontWeight: "800", marginTop: 2, color: colors.text },
-  bellBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+  date: { fontSize: 12, fontWeight: "600", color: grey, letterSpacing: 0.8 },
+  headline: {
+    fontSize: 44,
+    lineHeight: 46,
+    fontWeight: "700",
+    letterSpacing: -1.8,
+    color: ink,
+    paddingHorizontal: 24,
+    marginTop: 18,
+  },
+  headlineFaint: { color: faint },
+  ringRow: { flexDirection: "row", alignItems: "center", gap: 22, paddingHorizontal: 24, marginTop: 26 },
+  legend: { gap: 9, flex: 1, maxWidth: 160 },
+  legendRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendName: { fontSize: 13, color: ink, flex: 1 },
+  legendCount: { fontSize: 13, fontWeight: "700", color: ink, fontVariant: ["tabular-nums"] },
+  sectionHead: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: hairline,
+  },
+  sectionTitle: { fontSize: 12, fontWeight: "700", color: ink, letterSpacing: 0.8, textTransform: "uppercase" },
+  sectionMeta: { fontSize: 12, color: grey },
+  link: { fontSize: 12, fontWeight: "600", color: ink, textDecorationLine: "underline" },
+  list: { paddingHorizontal: 24 },
+  row: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: hairline,
+    gap: 12,
   },
-  bellDot: {
-    position: "absolute",
-    top: 9,
-    right: 10,
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: colors.amber,
-  },
-  memberRow: { flexDirection: "row", paddingLeft: 20, paddingTop: 2 },
-  memberChip: { alignItems: "center", marginRight: 14 },
-  memberChipLabel: { fontSize: 11, marginTop: 6, color: colors.text, fontWeight: "600" },
-  addChip: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+  rowMain: { flex: 1, flexDirection: "row", alignItems: "center", gap: 12 },
+  timeCol: { width: 54 },
+  timeBig: { fontSize: 18, fontWeight: "700", color: ink, letterSpacing: -0.5, fontVariant: ["tabular-nums"] },
+  timeSmall: { fontSize: 10, fontWeight: "700", color: "#9A9A9A", marginTop: 1, letterSpacing: 0.4 },
+  rowBody: { flex: 1, gap: 2 },
+  rowTitle: { fontSize: 15, fontWeight: "600", color: ink },
+  rowTitleDone: { color: faint, textDecorationLine: "line-through" },
+  rowSub: { fontSize: 12, color: grey },
+  tick: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     borderWidth: 1.5,
-    borderColor: "#C7CDD4",
-    borderStyle: "dashed",
+    borderColor: ink,
     alignItems: "center",
     justifyContent: "center",
-  },
-  statsRow: { flexDirection: "row", gap: 10, paddingHorizontal: 20, marginTop: 18 },
-  statCard: { flex: 1, padding: 14 },
-  statNum: { fontSize: 20, fontWeight: "800" },
-  statLabel: { fontSize: 11.5, color: colors.textMuted, marginTop: 2 },
-  sectionHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 22,
-    paddingBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  medCard: {
-    width: 150,
-    marginRight: 12,
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: "hidden",
-    ...shadow.card,
   },
-  medCardArt: {
-    height: 104,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  medCardIndex: {
-    position: "absolute",
-    left: 10,
-    top: 8,
-    alignItems: "center",
-    gap: 2,
-  },
-  medCardIndexLabel: { fontSize: 13, fontWeight: "800" },
-  medCardCheckOverlay: {
+  tickFill: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(28,36,48,0.4)",
+    backgroundColor: ink,
     alignItems: "center",
     justifyContent: "center",
   },
-  medCardCheckDot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  medCardBody: { padding: 12, gap: 3 },
-  medCardName: { fontSize: 13, fontWeight: "800", color: colors.text, lineHeight: 17 },
-  medCardSub: { fontSize: 11, color: colors.textMuted },
-  medCardTime: { fontSize: 11, color: colors.textFaint, fontWeight: "600", marginTop: 2 },
-  rxCard: { width: 220, padding: 14, marginRight: 12 },
-  rxDate: { fontSize: 11, color: colors.textFaint, fontWeight: "600", letterSpacing: 0.3 },
-  rxDoctor: { fontSize: 14, fontWeight: "700", marginTop: 6, color: colors.text },
-  rxSub: { fontSize: 12, color: colors.textMuted, marginTop: 3 },
-  rxMeds: { fontSize: 12, color: colors.primary, fontWeight: "600", marginTop: 10 },
 });
