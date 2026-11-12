@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable } from "rea
 import Svg, { Circle, Path } from "react-native-svg";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
-import BodyMap from "../components/BodyMap";
+import Body3D from "../components/Body3D";
 import FadeInUp from "../components/FadeInUp";
 import { BackIcon, CalendarIcon, CapsuleIcon, WarningIcon, FlaskIcon } from "../components/icons";
 import { prescriptions } from "../data/mockData";
@@ -77,7 +77,7 @@ export default function HealthScreeningScreen({ navigation, route }: Props) {
           ))}
         </ScrollView>
 
-        <BodyMap regions={regions} focus={focus} label={label} />
+        <Body3D regions={regions} focus={focus} label={label} />
 
         <View style={styles.sheet}>
           <View style={styles.handle} />
