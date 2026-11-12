@@ -143,6 +143,8 @@ export type Prescription = {
   date: string;
   time: string;
   followUp?: string;
+  /** What the doctor wrote as the diagnosis / reason for the visit. */
+  diagnosis?: string;
   notes?: string;
   medicineIds: string[];
 };
@@ -157,6 +159,7 @@ export const prescriptions: Prescription[] = [
     date: "07 Nov 2026",
     time: "11:20 AM",
     followUp: "14 Nov 2026",
+    diagnosis: "Acute tonsillitis (throat infection) with fever",
     notes:
       "Give antibiotics for the full 5 days even after fever subsides. Plenty of fluids and rest. Return if fever persists beyond 2 days.",
     medicineIds: ["amoxicillin", "paracetamol", "ors"],
@@ -169,6 +172,7 @@ export const prescriptions: Prescription[] = [
     hospital: "Apollo Hospital, Ahmedabad",
     date: "22 Sep 2026",
     time: "5:40 PM",
+    diagnosis: "Viral fever",
     medicineIds: ["paracetamol"],
   },
   {
@@ -179,6 +183,8 @@ export const prescriptions: Prescription[] = [
     hospital: "City Care Clinic",
     date: "02 Nov 2026",
     time: "6:10 PM",
+    diagnosis: "Tension headache and neck stiffness",
+    notes: "Rest, reduce screen time, gentle neck stretches. Review cholesterol with the lipid report.",
     medicineIds: ["paracetamol"],
   },
 ];

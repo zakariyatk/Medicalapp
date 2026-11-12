@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
 import { Card, ScreenHeader } from "../components/ui";
-import { PlusIcon, FlaskIcon } from "../components/icons";
+import { PlusIcon, FlaskIcon, CameraIcon } from "../components/icons";
+import { useAvatarTraits } from "../lib/avatar";
 import { colors, type } from "../theme";
 import { familyMembers, prescriptions, medicines, labReports } from "../data/mockData";
 import { MemberIllustration } from "../components/PersonIllustrations";
@@ -19,7 +20,9 @@ const TABS = ["Prescriptions", "Medicines", "Reports", "Vitals"];
 export default function MemberProfileScreen({ navigation, route }: Props) {
   const member = familyMembers.find((m) => m.id === route.params.memberId) ?? familyMembers[0];
   const [tab, setTab] = useState("Prescriptions");
+  const hasPhotoAvatar = Boolean(useAvatarTraits(member.id));
   const memberRx = prescriptions.filter((rx) => rx.memberId === member.id);
+  const latestDiagnosed = memberRx.find((rx) => rx.diagnosis);
   const memberLabs = labReports.filter((lr) => lr.memberId === member.id);
 
   const timelineVisits: TimelineVisit[] = memberRx.map((rx) => ({
@@ -46,6 +49,24 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
           {member.relation}
           {member.age ? ` · ${member.age} years old` : ""} · DOB {member.dob}
         </Text>
+        <TouchableOpacity
+          style={styles.avatarBtn}
+          accessibilityRole="button"
+          onPress={() => navigation.navigate("AvatarBuilder", { memberId: member.id })}
+        >
+          <CameraIcon size={14} color={colors.text} />
+          <Text style={styles.avatarBtnLabel}>{hasPhotoAvatar ? "Change avatar" : "Make avatar from photo"}</Text>
+        </TouchableOpacity>
+        {latestDiagnosed ? (
+          <TouchableOpacity
+            style={[styles.avatarBtn, styles.screeningBtn]}
+            accessibilityRole="button"
+            onPress={() => navigation.navigate("HealthScreening", { prescriptionId: latestDiagnosed.id })}
+          >
+            <View style={styles.screeningDot} />
+            <Text style={[styles.avatarBtnLabel, { color: "#7A3E12" }]}>Health screening</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <View style={styles.tagsRow}>
@@ -216,4 +237,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarBtn: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 99,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+  },
+  avatarBtnLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
+  screeningBtn: { marginTop: 8, backgroundColor: "#FCE3CF", borderColor: "#FCE3CF" },
+  screeningDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#F59E5B", borderWidth: 2, borderColor: "#FFFFFF" },
 });

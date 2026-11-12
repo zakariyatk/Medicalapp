@@ -15,7 +15,14 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const ROWS = ["Account details", "Find specialists", "Notification settings", "Privacy & data sharing", "Help & support"];
+const ROWS = [
+  "Account details",
+  "Invite a family member",
+  "Find specialists",
+  "Notification settings",
+  "Privacy & data sharing",
+  "Help & support",
+];
 
 export default function ProfileScreen({ navigation }: Props) {
   const you = familyMembers[0];
@@ -35,7 +42,13 @@ export default function ProfileScreen({ navigation }: Props) {
             <TouchableOpacity
               key={r}
               style={[styles.row, i < ROWS.length - 1 && styles.rowBorder]}
-              onPress={r === "Find specialists" ? () => navigation.navigate("Specialists") : undefined}
+              onPress={
+                r === "Find specialists"
+                  ? () => navigation.navigate("Specialists")
+                  : r === "Invite a family member"
+                    ? () => navigation.navigate("FamilyMembers", { invite: true })
+                    : undefined
+              }
             >
               <Text style={styles.rowLabel}>{r}</Text>
               <ChevronRightIcon />

@@ -46,7 +46,7 @@ export default function CapturePrescriptionScreen({ navigation }: Props) {
       setStage("review");
     } catch {
       setError("Couldn't read this prescription. You can still fill it in manually.");
-      setExtracted({ doctorName: "", hospital: "", date: "", time: "", medicines: [] });
+      setExtracted({ doctorName: "", hospital: "", date: "", time: "", diagnosis: "", medicines: [] });
       setStage("review");
     }
   }

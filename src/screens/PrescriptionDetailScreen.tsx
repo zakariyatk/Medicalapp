@@ -55,6 +55,19 @@ export default function PrescriptionDetailScreen({ navigation, route }: Props) {
           </View>
         </Card>
 
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.screeningBtn}
+          onPress={() => navigation.navigate("HealthScreening", { prescriptionId: rx.id })}
+        >
+          <View style={styles.screeningDot} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.screeningTitle}>Health screening</Text>
+            <Text style={styles.screeningSub}>{rx.diagnosis ? `${rx.diagnosis} · see it on the body` : "See this visit on a body map"}</Text>
+          </View>
+          <ChevronRightIcon color="#7A3E12" />
+        </TouchableOpacity>
+
         <View style={styles.scanRow}>
           <View style={styles.scanThumb}>
             <DocIcon color={colors.textFaint} />
@@ -128,4 +141,15 @@ const styles = StyleSheet.create({
   notesBox: { padding: 16, borderRadius: 14, backgroundColor: colors.amberTint },
   notesTitle: { fontSize: 13, fontWeight: "700", color: colors.amberText, marginBottom: 6 },
   notesText: { fontSize: 12.5, color: colors.amberText, lineHeight: 19 },
+  screeningBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 16,
+    borderRadius: 18,
+    backgroundColor: "#FCE3CF",
+  },
+  screeningDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: "#F59E5B", borderWidth: 3, borderColor: "#FFFFFF" },
+  screeningTitle: { fontSize: 15, fontWeight: "700", color: "#2A1E16" },
+  screeningSub: { fontSize: 12.5, color: "#7A3E12", marginTop: 2 },
 });

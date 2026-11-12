@@ -24,7 +24,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 
   const renderTab = (route: (typeof state.routes)[number], index: number) => {
     const isFocused = state.index === index;
-    const color = isFocused ? colors.primary : colors.textFaint;
+    const color = isFocused ? "#0D0D0D" : colors.textFaint;
     return (
       <TouchableOpacity
         key={route.key}
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: "#F2F2F2",
     backgroundColor: colors.surface,
     paddingHorizontal: 20,
     paddingTop: 10,
@@ -87,10 +87,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: "#0D0D0D",
     alignItems: "center",
     justifyContent: "center",
     marginTop: -26,
     ...shadow.fab,
+    shadowColor: "#000",
   },
 });

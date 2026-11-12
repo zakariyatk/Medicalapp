@@ -1,6 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import Svg, { Path, Circle, Rect, Ellipse, Line } from "react-native-svg";
+import AvatarFace from "./AvatarFace";
+import { useAvatarTraits } from "../lib/avatar";
 
 export type IllustrationProps = { width?: number; height?: number };
 
@@ -337,6 +339,12 @@ function resolveKind(member: MemberLike): Kind {
 
 /** Renders a family member's full-view cartoon illustration, picking the right character for who they are. */
 export function MemberIllustration({ member, width, height }: IllustrationProps & { member: MemberLike }) {
+  const traits = useAvatarTraits(member.id);
+  if (traits) {
+    // An avatar generated from a photo is a head-and-shoulders drawing; fit it to the space.
+    const size = Math.min(width ?? 200, height ?? 300);
+    return <AvatarFace traits={traits} shirt={member.color} size={size} />;
+  }
   switch (resolveKind(member)) {
     case "mother":
       return <MotherIllustration width={width} height={height} />;
@@ -370,6 +378,7 @@ function MemberFace({ member, size }: { member: MemberLike; size: number }) {
 
 /** Small circular cartoon-avatar, same character as the full illustration — for list rows, chips, headers. */
 export function MemberAvatar({ member, size = 48 }: { member: MemberLike; size?: number }) {
+  const traits = useAvatarTraits(member.id);
   return (
     <View
       style={{
@@ -382,7 +391,7 @@ export function MemberAvatar({ member, size = 48 }: { member: MemberLike; size?:
         justifyContent: "center",
       }}
     >
-      <MemberFace member={member} size={size} />
+      {traits ? <AvatarFace traits={traits} shirt={member.color} size={size} /> : <MemberFace member={member} size={size} />}
     </View>
   );
 }

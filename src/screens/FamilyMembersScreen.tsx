@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
 import { Card, PrimaryButton, ScreenHeader } from "../components/ui";
@@ -18,46 +18,18 @@ const accessLabel: Record<string, { label: string; bg: string; color: string }> 
 
 export default function FamilyMembersScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [showInvite, setShowInvite] = useState(false);
+  const route = useRoute<RouteProp<RootStackParamList, "FamilyMembers">>();
+  // Inviting lives in Profile → settings. The Family tab only lists members; the same screen
+  // opened from settings shows the invite form.
+  const fromSettings = route.name === "FamilyMembers";
+  const [showInvite, setShowInvite] = useState(Boolean(route.params?.invite));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title="Family members" onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined} />
       <Text style={styles.subtitle}>Everyone with access to your family’s medical records</Text>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 10 }}>
-        {familyMembers.map((m) => {
-          const access = accessLabel[m.access];
-          return (
-            <Card key={m.id} style={styles.memberCard}>
-              <MemberAvatar member={m} size={46} />
-              <View style={{ flex: 1 }}>
-                <Text style={type.bodyStrong}>
-                  {m.name} {m.access === "owner" ? <Text style={{ color: colors.primary, fontSize: 11 }}>(You)</Text> : null}
-                </Text>
-                <Text style={styles.memberSub}>
-                  {m.relation} · DOB {m.dob}
-                </Text>
-                <View style={styles.memberFooter}>
-                  <View style={[styles.tag, { backgroundColor: access.bg }]}>
-                    <Text style={[styles.tagText, { color: access.color }]}>{access.label}</Text>
-                  </View>
-                  {m.access !== "owner" ? (
-                    <TouchableOpacity>
-                      <Text style={styles.manageLink}>{m.access === "pending" ? "Resend" : "Manage"}</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
-              </View>
-            </Card>
-          );
-        })}
-
-        <TouchableOpacity style={styles.inviteBtn} onPress={() => setShowInvite((v) => !v)}>
-          <PlusIcon />
-          <Text style={styles.inviteBtnLabel}>Invite a family member</Text>
-        </TouchableOpacity>
-
-        {showInvite ? (
+        {fromSettings && showInvite ? (
           <Card style={styles.inviteForm}>
             <Text style={type.h3}>New invitation</Text>
             <View>
@@ -79,6 +51,47 @@ export default function FamilyMembersScreen() {
             <PrimaryButton label="Send invite" onPress={() => setShowInvite(false)} />
           </Card>
         ) : null}
+        {familyMembers.map((m) => {
+          const access = accessLabel[m.access];
+          return (
+            <TouchableOpacity
+              key={m.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Open ${m.name}'s profile`}
+              onPress={() => navigation.navigate("MemberProfile", { memberId: m.id })}
+            >
+            <Card style={styles.memberCard}>
+              <MemberAvatar member={m} size={46} />
+              <View style={{ flex: 1 }}>
+                <Text style={type.bodyStrong}>
+                  {m.name} {m.access === "owner" ? <Text style={{ color: colors.primary, fontSize: 11 }}>(You)</Text> : null}
+                </Text>
+                <Text style={styles.memberSub}>
+                  {m.relation} · DOB {m.dob}
+                </Text>
+                <View style={styles.memberFooter}>
+                  <View style={[styles.tag, { backgroundColor: access.bg }]}>
+                    <Text style={[styles.tagText, { color: access.color }]}>{access.label}</Text>
+                  </View>
+                  {m.access !== "owner" ? (
+                    <TouchableOpacity>
+                      <Text style={styles.manageLink}>{m.access === "pending" ? "Resend" : "Manage"}</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+              </View>
+            </Card>
+            </TouchableOpacity>
+          );
+        })}
+
+        {fromSettings && !showInvite ? (
+        <TouchableOpacity style={styles.inviteBtn} onPress={() => setShowInvite(true)}>
+          <PlusIcon />
+          <Text style={styles.inviteBtnLabel}>Invite a family member</Text>
+        </TouchableOpacity>
+        ) : null}
+
       </ScrollView>
     </SafeAreaView>
   );
