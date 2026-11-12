@@ -7,29 +7,30 @@ import BodyMap from "./BodyMap";
 import type { BodyRegion } from "../lib/healthScreening";
 
 /**
- * A real 3D body for Health Screening, built from smooth primitives (no model file to download).
- * Drag sideways to turn it. Affected areas are drawn as red muscle or organs; for organs inside the
- * chest or belly the skin turns see-through. The camera glides to whichever area is selected.
+ * A 3D body for Health Screening, modelled in code (no model file to download). Torso, limbs,
+ * neck and head are lathed from anatomical side profiles (chest → waist → hips, biceps, calves,
+ * skull and jaw) and flattened front-to-back, so they read as a real figure rather than tubes.
+ *
+ * Drag sideways to turn it. Affected muscles are painted red; for organs inside the chest or belly
+ * the skin turns see-through. The camera glides to whichever area is selected.
  */
 
 type V3 = [number, number, number];
 
-const SKIN = "#D8D4E0";
-const MUSCLE = "#C9563F";
 const GLOW = "#F59E5B";
 
 /** Where to aim the camera and the marker for each region. */
 const FOCUS: Record<BodyRegion, { point: V3; camY: number; dist: number; xray?: boolean }> = {
-  head: { point: [0, 1.66, 0.11], camY: 1.58, dist: 1.35 },
-  throat: { point: [0, 1.47, 0.06], camY: 1.48, dist: 1.35 },
-  thyroid: { point: [0, 1.44, 0.06], camY: 1.46, dist: 1.35 },
-  lungs: { point: [-0.075, 1.22, 0.07], camY: 1.2, dist: 1.7, xray: true },
-  heart: { point: [0.04, 1.2, 0.07], camY: 1.2, dist: 1.65, xray: true },
-  stomach: { point: [0.05, 1.03, 0.08], camY: 1.08, dist: 1.7, xray: true },
-  shoulders: { point: [-0.228, 1.37, 0.066], camY: 1.3, dist: 1.75 },
-  knees: { point: [-0.095, 0.44, 0.07], camY: 0.55, dist: 1.7 },
-  skin: { point: [-0.29, 1.05, 0.05], camY: 1.0, dist: 2.7 },
-  wholeBody: { point: [0, 1.66, 0.11], camY: 0.95, dist: 3.0 },
+  head: { point: [0, 1.68, 0.085], camY: 1.6, dist: 1.3 },
+  throat: { point: [0, 1.49, 0.05], camY: 1.5, dist: 1.3 },
+  thyroid: { point: [0, 1.455, 0.05], camY: 1.48, dist: 1.3 },
+  lungs: { point: [-0.065, 1.25, 0.075], camY: 1.22, dist: 1.65, xray: true },
+  heart: { point: [0.035, 1.21, 0.07], camY: 1.22, dist: 1.6, xray: true },
+  stomach: { point: [0.04, 1.05, 0.075], camY: 1.1, dist: 1.65, xray: true },
+  shoulders: { point: [-0.205, 1.37, 0.06], camY: 1.32, dist: 1.7 },
+  knees: { point: [-0.085, 0.48, 0.058], camY: 0.58, dist: 1.7 },
+  skin: { point: [-0.25, 1.02, 0.05], camY: 1.05, dist: 2.6 },
+  wholeBody: { point: [0, 1.68, 0.085], camY: 0.95, dist: 3.0 },
 };
 
 /** Drag rotation, read every frame by the render loop (kept outside React state on purpose). */
@@ -50,143 +51,171 @@ class Turn {
   }
 }
 
-// ---- Building blocks -------------------------------------------------------------------------
+// ---- Anatomy: side profiles [radius, height] lathed into smooth solids ---------------------
 
-type PartProps = { position: V3; scale?: V3; rotation?: V3; material: THREE.Material };
-
-function Ball({ r, ...p }: PartProps & { r: number }) {
-  return (
-    <mesh position={p.position} scale={p.scale} rotation={p.rotation} material={p.material}>
-      <sphereGeometry args={[r, 40, 32]} />
-    </mesh>
+function lathe(profile: [number, number][], segments = 48) {
+  return new THREE.LatheGeometry(
+    profile.map(([r, y]) => new THREE.Vector2(r, y)),
+    segments,
   );
 }
 
-function Capsule({ r, len, ...p }: PartProps & { r: number; len: number }) {
-  return (
-    <mesh position={p.position} scale={p.scale} rotation={p.rotation} material={p.material}>
-      <capsuleGeometry args={[r, len, 12, 32]} />
-    </mesh>
+function useAnatomy() {
+  return useMemo(
+    () => ({
+      head: lathe([
+        [0.0, 1.535], [0.028, 1.538], [0.05, 1.548], [0.064, 1.565], [0.073, 1.588], [0.079, 1.615],
+        [0.084, 1.645], [0.088, 1.675], [0.088, 1.705], [0.083, 1.73], [0.072, 1.752], [0.054, 1.768],
+        [0.03, 1.778], [0.0, 1.781],
+      ]),
+      neck: lathe([[0.056, 1.42], [0.05, 1.45], [0.046, 1.49], [0.046, 1.52], [0.05, 1.555]]),
+      // crotch → hips → waist → ribcage → chest → shoulder line
+      torso: lathe([
+        [0.0, 0.855], [0.07, 0.86], [0.12, 0.88], [0.145, 0.915], [0.152, 0.955], [0.147, 0.995],
+        [0.134, 1.04], [0.127, 1.075], [0.132, 1.11], [0.146, 1.165], [0.16, 1.22], [0.168, 1.275],
+        [0.171, 1.325], [0.166, 1.365], [0.148, 1.398], [0.115, 1.42], [0.07, 1.432], [0.0, 1.436],
+      ]),
+      // elbow (0) → biceps → shoulder (0.28)
+      upperArm: lathe([
+        [0.034, 0.0], [0.037, 0.025], [0.041, 0.07], [0.046, 0.12], [0.047, 0.16], [0.045, 0.2],
+        [0.048, 0.24], [0.052, 0.28],
+      ]),
+      // wrist (0) → forearm belly → elbow (0.25)
+      forearm: lathe([
+        [0.024, 0.0], [0.027, 0.04], [0.033, 0.1], [0.039, 0.16], [0.041, 0.2], [0.039, 0.235], [0.036, 0.25],
+      ]),
+      // knee (0) → quadriceps → hip (0.42)
+      thigh: lathe([
+        [0.047, 0.0], [0.051, 0.03], [0.06, 0.1], [0.07, 0.18], [0.078, 0.27], [0.083, 0.35], [0.084, 0.42],
+      ]),
+      // ankle (0) → calf → knee (0.4)
+      shin: lathe([
+        [0.027, 0.0], [0.03, 0.04], [0.036, 0.1], [0.046, 0.19], [0.052, 0.26], [0.05, 0.33], [0.047, 0.4],
+      ]),
+      sphere: new THREE.SphereGeometry(1, 40, 28),
+    }),
+    [],
   );
 }
+
+type Paint = {
+  neck?: THREE.Material;
+  deltoid?: THREE.Material;
+  trap?: THREE.Material;
+  upperArm?: THREE.Material;
+  forearm?: THREE.Material;
+  knee?: THREE.Material;
+};
 
 const SIDES = [-1, 1] as const;
 
-/** The base figure. `skin` is used for most parts; `torsoSkin` lets the chest go see-through. */
-function Figure({ skin, torsoSkin }: { skin: THREE.Material; torsoSkin: THREE.Material }) {
+/** The figure. Parts listed in `paint` use that material instead of skin. */
+function Figure({ skin, torsoSkin, paint }: { skin: THREE.Material; torsoSkin: THREE.Material; paint: Paint }) {
+  const a = useAnatomy();
+  const blob = (key: string, position: V3, scale: V3, material: THREE.Material, rotation?: V3) => (
+    <mesh key={key} geometry={a.sphere} position={position} scale={scale} rotation={rotation} material={material} />
+  );
+
   return (
     <group>
-      {/* head */}
-      <Ball r={0.1} position={[0, 1.63, 0]} scale={[0.95, 1.18, 1.05]} material={skin} />
-      <Ball r={0.02} position={[0, 1.615, 0.105]} scale={[0.7, 1.2, 1]} material={skin} />
-      {SIDES.map((s) => (
-        <Ball key={`ear${s}`} r={0.025} position={[s * 0.097, 1.63, 0]} scale={[0.5, 1, 0.8]} material={skin} />
-      ))}
-      {/* neck and trapezius */}
-      <mesh position={[0, 1.47, 0]} material={skin}>
-        <cylinderGeometry args={[0.045, 0.056, 0.14, 32]} />
-      </mesh>
-      <Ball r={0.09} position={[0, 1.415, -0.01]} scale={[1.65, 0.5, 0.8]} material={skin} />
+      {/* head: lathed skull + jaw, flattened side to side, with nose, brow, chin and ears */}
+      <mesh geometry={a.head} scale={[0.88, 1, 1.06]} position={[0, 0, 0.004]} material={skin} />
+      {blob("nose", [0, 1.636, 0.084], [0.011, 0.022, 0.016], skin)}
+      {blob("brow", [0, 1.68, 0.072], [0.05, 0.012, 0.02], skin)}
+      {blob("chin", [0, 1.56, 0.042], [0.024, 0.016, 0.02], skin)}
+      {SIDES.map((s) => blob(`ear${s}`, [s * 0.074, 1.64, -0.004], [0.009, 0.024, 0.016], skin))}
 
-      {/* torso, chest, abs, pelvis */}
-      <Capsule r={0.16} len={0.32} position={[0, 1.18, 0]} scale={[1.2, 1, 0.68]} material={torsoSkin} />
-      {SIDES.map((s) => (
-        <Ball key={`pec${s}`} r={0.085} position={[s * 0.075, 1.28, 0.08]} scale={[1.05, 0.7, 0.36]} material={torsoSkin} />
-      ))}
-      {[1.15, 1.09, 1.03].map((y) =>
-        SIDES.map((s) => (
-          <Ball key={`ab${y}${s}`} r={0.028} position={[s * 0.032, y, 0.098]} scale={[1, 0.8, 0.28]} material={torsoSkin} />
-        )),
+      {/* neck with sternocleidomastoid ridges, trapezius sloping to the shoulders */}
+      <mesh geometry={a.neck} scale={[1, 1, 0.92]} material={paint.neck ?? skin} />
+      {SIDES.map((s) =>
+        blob(`scm${s}`, [s * 0.022, 1.48, 0.026], [0.011, 0.048, 0.012], paint.neck ?? skin, [0.3, 0, s * -0.4]),
       )}
-      <Ball r={0.15} position={[0, 0.9, 0]} scale={[1.15, 0.75, 0.8]} material={skin} />
+      {SIDES.map((s) => blob(`trap${s}`, [s * 0.105, 1.418, -0.012], [0.095, 0.03, 0.06], paint.trap ?? skin, [0, 0, s * -0.32]))}
 
-      {/* arms */}
+      {/* torso: lathed chest-waist-hips, flattened front to back */}
+      <mesh geometry={a.torso} scale={[1, 1, 0.62]} material={torsoSkin} />
+      {SIDES.map((s) => blob(`pec${s}`, [s * 0.072, 1.285, 0.072], [0.078, 0.056, 0.032], torsoSkin, [0, 0, s * 0.18]))}
+      {SIDES.map((s) => blob(`lat${s}`, [s * 0.135, 1.2, -0.005], [0.03, 0.09, 0.06], torsoSkin))}
+      {blob("abs", [0, 1.1, 0.068], [0.062, 0.1, 0.018], torsoSkin)}
+      {SIDES.map((s) => blob(`glute${s}`, [s * 0.075, 0.9, -0.045], [0.08, 0.075, 0.06], skin))}
+
+      {/* arms: shoulder joint → upper arm → elbow → forearm → hand */}
       {SIDES.map((s) => (
         <group key={`arm${s}`}>
-          <Ball r={0.062} position={[s * 0.228, 1.36, 0]} scale={[1, 1.15, 1]} material={skin} />
-          <Capsule r={0.048} len={0.22} position={[s * 0.265, 1.18, 0]} rotation={[0, 0, s * 0.1]} material={skin} />
-          <Capsule r={0.04} len={0.22} position={[s * 0.295, 0.93, 0.01]} rotation={[0, 0, s * 0.06]} material={skin} />
-          <Ball r={0.045} position={[s * 0.31, 0.76, 0.02]} scale={[0.75, 1.25, 0.45]} material={skin} />
+          {blob(`delt${s}`, [s * 0.2, 1.37, 0.002], [0.058, 0.07, 0.06], paint.deltoid ?? skin, [0, 0, s * 0.25])}
+          <group position={[s * 0.2, 1.385, 0]} rotation={[0, 0, s * 0.13]}>
+            <mesh geometry={a.upperArm} position={[0, -0.28, 0]} scale={[1, 1, 0.95]} material={paint.upperArm ?? skin} />
+            {blob(`bicep${s}`, [0, -0.15, 0.022], [0.032, 0.07, 0.03], paint.upperArm ?? skin)}
+            <group position={[0, -0.28, 0]} rotation={[0.08, 0, s * -0.06]}>
+              {blob(`elbow${s}`, [0, 0, 0], [0.036, 0.036, 0.034], skin)}
+              <mesh geometry={a.forearm} position={[0, -0.25, 0]} scale={[1, 1, 0.85]} material={paint.forearm ?? skin} />
+              {/* hand: palm, fingers and thumb */}
+              <group position={[0, -0.255, 0.004]}>
+                {blob(`palm${s}`, [0, -0.035, 0], [0.026, 0.045, 0.014], skin)}
+                {blob(`fingers${s}`, [0, -0.085, 0.002], [0.022, 0.036, 0.011], skin)}
+                {blob(`thumb${s}`, [s * -0.022, -0.035, 0.014], [0.009, 0.03, 0.009], skin, [0, 0, s * 0.5])}
+              </group>
+            </group>
+          </group>
         </group>
       ))}
 
-      {/* legs */}
+      {/* legs: hip → thigh → knee → shin → foot */}
       {SIDES.map((s) => (
-        <group key={`leg${s}`}>
-          <Capsule r={0.075} len={0.3} position={[s * 0.095, 0.62, 0]} material={skin} />
-          <Ball r={0.055} position={[s * 0.095, 0.44, 0.02]} material={skin} />
-          <Capsule r={0.055} len={0.3} position={[s * 0.095, 0.25, 0]} material={skin} />
-          <Capsule r={0.04} len={0.1} position={[s * 0.095, 0.04, 0.05]} rotation={[Math.PI / 2, 0, 0]} material={skin} />
+        <group key={`leg${s}`} position={[s * 0.085, 0.9, 0]} rotation={[0, 0, s * -0.02]}>
+          <mesh geometry={a.thigh} position={[0, -0.42, 0]} scale={[1, 1, 0.92]} material={skin} />
+          {blob(`quad${s}`, [s * 0.01, -0.24, 0.03], [0.055, 0.12, 0.045], skin)}
+          <group position={[0, -0.42, 0]}>
+            {blob(`knee${s}`, [0, 0, 0.004], [0.05, 0.052, 0.05], paint.knee ?? skin)}
+            {blob(`kneecap${s}`, [0, 0.005, 0.04], [0.024, 0.028, 0.016], paint.knee ?? skin)}
+            <mesh geometry={a.shin} position={[0, -0.4, 0]} scale={[1, 1, 0.95]} material={skin} />
+            {blob(`calf${s}`, [s * 0.006, -0.15, -0.018], [0.045, 0.085, 0.038], skin)}
+            {/* foot: heel, arch and toes */}
+            <group position={[0, -0.43, 0]}>
+              {blob(`heel${s}`, [0, 0.0, -0.005], [0.028, 0.03, 0.035], skin)}
+              {blob(`foot${s}`, [s * 0.004, -0.008, 0.055], [0.036, 0.024, 0.075], skin)}
+            </group>
+          </group>
         </group>
       ))}
     </group>
   );
 }
 
-/** Red muscle / organ shapes for the affected regions. */
-function Highlights({ regions, muscle, glow }: { regions: BodyRegion[]; muscle: THREE.Material; glow: THREE.Material }) {
+/** Organs and glows for the affected regions (muscles are painted directly on the figure). */
+function Organs({ regions, organ, glow }: { regions: BodyRegion[]; organ: THREE.Material; glow: THREE.Material }) {
+  const a = useAnatomy();
+  const blob = (key: string, position: V3, scale: V3, material: THREE.Material, rotation?: V3) => (
+    <mesh key={key} geometry={a.sphere} position={position} scale={scale} rotation={rotation} material={material} />
+  );
   return (
     <group>
       {regions.map((region) => {
         switch (region) {
           case "head":
-            return <Ball key={region} r={0.145} position={[0, 1.64, 0]} scale={[0.95, 1.12, 1]} material={glow} />;
-          case "throat":
-            return (
-              <mesh key={region} position={[0, 1.47, 0.004]} material={muscle}>
-                <cylinderGeometry args={[0.049, 0.06, 0.1, 32]} />
-              </mesh>
-            );
+            return blob(region, [0, 1.655, 0.004], [0.115, 0.15, 0.12], glow);
+          case "wholeBody":
+            return blob(region, [0, 1.655, 0.004], [0.13, 0.165, 0.135], glow);
           case "thyroid":
             return (
               <group key={region}>
-                {SIDES.map((s) => (
-                  <Ball key={s} r={0.022} position={[s * 0.022, 1.44, 0.045]} scale={[1, 1.3, 0.7]} material={muscle} />
-                ))}
+                {SIDES.map((s) => blob(`${region}${s}`, [s * 0.02, 1.455, 0.04], [0.016, 0.024, 0.01], organ))}
               </group>
             );
           case "lungs":
             return (
               <group key={region}>
-                {SIDES.map((s) => (
-                  <Ball key={s} r={0.075} position={[s * 0.075, 1.2, 0.01]} scale={[0.85, 1.35, 0.7]} material={muscle} />
-                ))}
+                {SIDES.map((s) =>
+                  blob(`${region}${s}`, [s * 0.068, 1.235, 0.008], [0.06, 0.1, 0.05], organ, [0, 0, s * 0.12]),
+                )}
               </group>
             );
           case "heart":
-            return <Ball key={region} r={0.05} position={[0.04, 1.2, 0.04]} scale={[0.9, 1.1, 0.85]} rotation={[0, 0, -0.5]} material={muscle} />;
+            return blob(region, [0.03, 1.215, 0.03], [0.042, 0.052, 0.036], organ, [0, 0, -0.5]);
           case "stomach":
-            return <Ball key={region} r={0.065} position={[0.05, 1.03, 0.03]} scale={[1.25, 0.8, 0.7]} rotation={[0, 0, 0.3]} material={muscle} />;
-          case "shoulders":
-            return (
-              <group key={region}>
-                {SIDES.map((s) => (
-                  <group key={s}>
-                    <Ball r={0.065} position={[s * 0.228, 1.36, 0.002]} scale={[1, 1.15, 1]} material={muscle} />
-                    <Capsule r={0.05} len={0.12} position={[s * 0.26, 1.23, 0.002]} rotation={[0, 0, s * 0.1]} material={muscle} />
-                    <Ball r={0.07} position={[s * 0.11, 1.42, -0.005]} scale={[1.3, 0.48, 0.82]} material={muscle} />
-                  </group>
-                ))}
-              </group>
-            );
-          case "knees":
-            return (
-              <group key={region}>
-                {SIDES.map((s) => (
-                  <Ball key={s} r={0.058} position={[s * 0.095, 0.44, 0.02]} material={muscle} />
-                ))}
-              </group>
-            );
-          case "skin":
-            return (
-              <group key={region}>
-                {SIDES.map((s) => (
-                  <Capsule key={s} r={0.052} len={0.22} position={[s * 0.265, 1.18, 0]} rotation={[0, 0, s * 0.1]} material={glow} />
-                ))}
-              </group>
-            );
-          case "wholeBody":
-            return <Ball key={region} r={0.16} position={[0, 1.64, 0]} scale={[0.95, 1.1, 1]} material={glow} />;
+            return blob(region, [0.04, 1.06, 0.02], [0.07, 0.045, 0.035], organ, [0, 0, 0.35]);
+          default:
+            return null;
         }
       })}
     </group>
@@ -206,15 +235,15 @@ function Marker({ point }: { point: V3 }) {
   return (
     <group position={point}>
       <mesh>
-        <sphereGeometry args={[0.014, 20, 16]} />
+        <sphereGeometry args={[0.012, 20, 16]} />
         <meshBasicMaterial color="#FFFFFF" />
       </mesh>
       <mesh>
-        <sphereGeometry args={[0.022, 20, 16]} />
+        <sphereGeometry args={[0.019, 20, 16]} />
         <meshBasicMaterial color={GLOW} transparent opacity={0.9} depthWrite={false} />
       </mesh>
       <mesh ref={halo}>
-        <sphereGeometry args={[0.022, 20, 16]} />
+        <sphereGeometry args={[0.019, 20, 16]} />
         <meshBasicMaterial color={GLOW} transparent opacity={0.5} depthWrite={false} />
       </mesh>
     </group>
@@ -222,15 +251,7 @@ function Marker({ point }: { point: V3 }) {
 }
 
 /** Turns the body (drag or gentle idle sway) and glides the camera to the focused area. */
-function Rig({
-  focus,
-  drag,
-  children,
-}: {
-  focus: BodyRegion;
-  drag: Turn;
-  children: ReactNode;
-}) {
+function Rig({ focus, drag, children }: { focus: BodyRegion; drag: Turn; children: ReactNode }) {
   const group = useRef<THREE.Group>(null);
   const target = FOCUS[focus];
   useFrame(({ camera, clock }, delta) => {
@@ -293,30 +314,43 @@ export default function Body3D({
 
   const materials = useMemo(() => {
     const warm = regions.includes("wholeBody");
+    const skinProps: THREE.MeshPhysicalMaterialParameters = {
+      color: "#D7D2DF",
+      roughness: 0.5,
+      metalness: 0,
+      clearcoat: 0.2,
+      clearcoatRoughness: 0.55,
+      sheen: 0.5,
+      sheenRoughness: 0.8,
+      sheenColor: new THREE.Color("#FFFFFF"),
+      emissive: new THREE.Color(warm ? "#FF7A45" : "#000000"),
+      emissiveIntensity: warm ? 0.12 : 0,
+    };
+    const muscle = new THREE.MeshPhysicalMaterial({
+      color: "#C2503D",
+      roughness: 0.38,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.35,
+      emissive: new THREE.Color("#4A1008"),
+      emissiveIntensity: 0.3,
+    });
+    const rash = new THREE.MeshPhysicalMaterial({ ...skinProps, color: "#E3A08E", emissive: new THREE.Color("#7A2A14"), emissiveIntensity: 0.15 });
+    const paint: Paint = {};
+    if (regions.includes("throat")) paint.neck = muscle;
+    if (regions.includes("shoulders")) Object.assign(paint, { deltoid: muscle, trap: muscle, upperArm: muscle });
+    if (regions.includes("knees")) paint.knee = muscle;
+    if (regions.includes("skin")) Object.assign(paint, { upperArm: rash, forearm: rash });
     return {
-      skin: new THREE.MeshStandardMaterial({
-        color: SKIN,
-        roughness: 0.55,
-        metalness: 0.04,
-        emissive: warm ? new THREE.Color("#FF7A45") : new THREE.Color("#000000"),
-        emissiveIntensity: warm ? 0.12 : 0,
-      }),
-      torso: new THREE.MeshStandardMaterial({
-        color: SKIN,
-        roughness: 0.55,
-        metalness: 0.04,
+      skin: new THREE.MeshPhysicalMaterial(skinProps),
+      torso: new THREE.MeshPhysicalMaterial({
+        ...skinProps,
         transparent: xray,
-        opacity: xray ? 0.32 : 1,
+        opacity: xray ? 0.3 : 1,
         depthWrite: !xray,
       }),
-      muscle: new THREE.MeshStandardMaterial({
-        color: MUSCLE,
-        roughness: 0.42,
-        metalness: 0.05,
-        emissive: new THREE.Color("#5A140A"),
-        emissiveIntensity: 0.25,
-      }),
-      glow: new THREE.MeshBasicMaterial({ color: "#FF7A45", transparent: true, opacity: 0.28, depthWrite: false }),
+      organ: muscle,
+      glow: new THREE.MeshBasicMaterial({ color: "#FF7A45", transparent: true, opacity: 0.16, depthWrite: false }),
+      paint,
     };
   }, [regions, xray]);
 
@@ -327,13 +361,14 @@ export default function Body3D({
       <Fallback fallback={fallback}>
         <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
           <Canvas camera={{ position: [0, 1.2, 2.6], fov: 32, near: 0.05, far: 20 }} style={{ flex: 1 }}>
-            <ambientLight intensity={0.45} />
-            <hemisphereLight args={["#FFFFFF", "#D9C7B8", 0.7]} />
-            <directionalLight position={[-1.5, 2.5, 2]} intensity={1.7} />
-            <directionalLight position={[1.6, 1.2, -1.8]} intensity={0.7} color="#FFD3B8" />
+            <ambientLight intensity={0.35} />
+            <hemisphereLight args={["#FFFFFF", "#D9C7B8", 0.75]} />
+            <directionalLight position={[-1.4, 2.6, 2.2]} intensity={1.8} />
+            <directionalLight position={[1.8, 1.0, 1.2]} intensity={0.35} color="#E8E4FF" />
+            <directionalLight position={[1.4, 1.6, -2]} intensity={0.9} color="#FFD3B8" />
             <Rig focus={focus} drag={drag}>
-              <Figure skin={materials.skin} torsoSkin={materials.torso} />
-              <Highlights regions={regions} muscle={materials.muscle} glow={materials.glow} />
+              <Figure skin={materials.skin} torsoSkin={materials.torso} paint={materials.paint} />
+              <Organs regions={regions} organ={materials.organ} glow={materials.glow} />
               <Marker point={FOCUS[focus].point} />
             </Rig>
           </Canvas>
