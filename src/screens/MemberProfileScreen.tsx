@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
-import { Avatar, Card, ScreenHeader } from "../components/ui";
+import { Card, ScreenHeader } from "../components/ui";
 import { PlusIcon, FlaskIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers, prescriptions, medicines, labReports } from "../data/mockData";
+import { MemberIllustration } from "../components/PersonIllustrations";
 import MemberTimeline, { TimelineVisit } from "../components/MemberTimeline";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
@@ -35,15 +36,15 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title="Medical profile" onBack={() => navigation.goBack()} />
 
-      <View style={styles.profileRow}>
-        <Avatar initials={member.initials} color={member.color} size={60} />
-        <View>
-          <Text style={styles.name}>{member.name}</Text>
-          <Text style={styles.sub}>
-            {member.relation}
-            {member.age ? ` · ${member.age} years old` : ""} · DOB {member.dob}
-          </Text>
-        </View>
+      <View style={styles.heroCard}>
+        <View style={[styles.heroBlobA, { backgroundColor: `${member.color}1F` }]} />
+        <View style={[styles.heroBlobB, { backgroundColor: `${member.color}14` }]} />
+        <MemberIllustration member={member} width={132} height={196} />
+        <Text style={styles.name}>{member.name}</Text>
+        <Text style={styles.sub}>
+          {member.relation}
+          {member.age ? ` · ${member.age} years old` : ""} · DOB {member.dob}
+        </Text>
       </View>
 
       <View style={styles.tagsRow}>
@@ -147,9 +148,23 @@ function LabStatusTag({ status }: { status: string }) {
 }
 
 const styles = StyleSheet.create({
-  profileRow: { flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 20, marginTop: 6 },
-  name: { fontSize: 17, fontWeight: "800", color: colors.text },
-  sub: { fontSize: 12.5, color: colors.textMuted, marginTop: 2 },
+  heroCard: {
+    marginHorizontal: 20,
+    marginTop: 6,
+    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    overflow: "hidden",
+  },
+  heroBlobA: { position: "absolute", top: -50, right: -40, width: 150, height: 150, borderRadius: 75 },
+  heroBlobB: { position: "absolute", bottom: -60, left: -50, width: 160, height: 160, borderRadius: 80 },
+  name: { fontSize: 17, fontWeight: "800", color: colors.text, marginTop: 10 },
+  sub: { fontSize: 12.5, color: colors.textMuted, marginTop: 2, textAlign: "center" },
   tagsRow: { flexDirection: "row", gap: 8, flexWrap: "wrap", paddingHorizontal: 20, marginTop: 14 },
   tabsRow: {
     flexDirection: "row",

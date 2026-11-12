@@ -270,3 +270,71 @@ export function GalleryIcon({ size = 16, color = "#fff" }: IconProps) {
     </Svg>
   );
 }
+
+export function HeartIcon({ size = 22, color = "#0F766E" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 20.3 4.6 13c-2.1-2.1-2.1-5.4 0-7.4 2-2 5.2-2 7.1.2l.3.3.3-.3c1.9-2.2 5.1-2.2 7.1-.2 2.1 2 2.1 5.3 0 7.4L12 20.3Z"
+        stroke={color}
+        strokeWidth={1.7}
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function HeartPulseIcon({ size = 18, color = "#E4435A" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M2 12h4l1.5-3.5L11 17l2.5-10L15 12h7"
+        stroke={color}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function LungsIcon({ size = 24, color = "#0F766E" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M12 3v7.5" stroke={color} strokeWidth={1.7} strokeLinecap="round" />
+      <Path
+        d="M12 10.5c-1-2-2.8-2.6-4.2-1.8C6 9.7 5 11.5 5 14c0 2.8 1 5.3 2.4 6.4 1 .8 2.2.5 2.8-.6.7-1.2.8-3 .8-5.3v-3.5Z"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M12 10.5c1-2 2.8-2.6 4.2-1.8C17.4 9.3 19 11.5 19 14c0 2.8-1 5.3-2.4 6.4-1 .8-2.2.5-2.8-.6-.7-1.2-.8-3-.8-5.3v-3.5Z"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+      />
+      <Path d="M8.5 7.5c0-1.4 1-2.5 1-3.5M15.5 7.5c0-1.4-1-2.5-1-3.5" stroke={color} strokeWidth={1.4} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function BrainIcon({ size = 24, color = "#0F766E" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M9.5 4.2c-1.8 0-3.2 1.4-3.2 3.1 0 .3 0 .6.1.9-1 .5-1.7 1.6-1.7 2.8 0 .9.4 1.7 1 2.2-.3.5-.5 1.1-.5 1.7 0 1.7 1.3 3.1 3 3.2v1.1c0 .9.7 1.6 1.6 1.6s1.6-.7 1.6-1.6V6.3c0-1.2-.9-2.1-1.9-2.1Z"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M14.5 4.2c1.8 0 3.2 1.4 3.2 3.1 0 .3 0 .6-.1.9 1 .5 1.7 1.6 1.7 2.8 0 .9-.4 1.7-1 2.2.3.5.5 1.1.5 1.7 0 1.7-1.3 3.1-3 3.2v1.1c0 .9-.7 1.6-1.6 1.6s-1.6-.7-1.6-1.6V6.3c0-1.2.9-2.1 1.9-2.1Z"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <Path d="M12 7.5v11.5M9 10.2h2M13 10.2h2M8.8 13.6h2.4M12.8 13.6h2.4" stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+    </Svg>
+  );
+}
