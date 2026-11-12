@@ -10,7 +10,7 @@ import { colors, type } from "../theme";
 import { familyMembers } from "../data/mockData";
 
 const accessLabel: Record<string, { label: string; bg: string; color: string }> = {
-  owner: { label: "Full access", bg: colors.primaryTint, color: colors.primary },
+  owner: { label: "Full access", bg: "#EAF4F2", color: "#0F766E" },
   full: { label: "Full access · Logged in", bg: colors.primaryTint, color: colors.primary },
   child: { label: "Child profile · Managed by you", bg: colors.indigoTint, color: colors.indigo },
   pending: { label: "Invitation pending", bg: colors.amberTint, color: colors.amber },
@@ -32,7 +32,7 @@ export default function FamilyMembersScreen() {
               <MemberAvatar member={m} size={46} />
               <View style={{ flex: 1 }}>
                 <Text style={type.bodyStrong}>
-                  {m.name} {m.access === "owner" ? <Text style={{ color: colors.primary, fontSize: 11 }}>(You)</Text> : null}
+                  {m.name} {m.access === "owner" ? <Text style={{ color: "#0F766E", fontSize: 11 }}>(You)</Text> : null}
                 </Text>
                 <Text style={styles.memberSub}>
                   {m.relation} · DOB {m.dob}
