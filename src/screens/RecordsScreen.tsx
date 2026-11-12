@@ -4,7 +4,8 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Card } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import { ChevronRightIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers, prescriptions } from "../data/mockData";
@@ -27,7 +28,7 @@ export default function RecordsScreen({ navigation }: Props) {
           return (
             <TouchableOpacity key={m.id} onPress={() => navigation.navigate("MemberProfile", { memberId: m.id })}>
               <Card style={styles.row}>
-                <Avatar initials={m.initials} color={m.color} size={46} />
+                <MemberAvatar member={m} size={46} />
                 <View style={{ flex: 1 }}>
                   <Text style={type.bodyStrong}>{m.name}</Text>
                   <Text style={styles.sub}>

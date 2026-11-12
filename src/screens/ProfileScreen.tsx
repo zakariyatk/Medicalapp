@@ -4,7 +4,8 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Card } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import { ChevronRightIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers } from "../data/mockData";
@@ -22,7 +23,7 @@ export default function ProfileScreen({ navigation }: Props) {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
         <View style={styles.profileRow}>
-          <Avatar initials={you.initials} color={you.color} size={56} />
+          <MemberAvatar member={you} size={56} />
           <View>
             <Text style={type.h2}>{you.name}</Text>
             <Text style={styles.sub}>Account owner</Text>

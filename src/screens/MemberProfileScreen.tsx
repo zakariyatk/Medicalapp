@@ -7,6 +7,7 @@ import { PlusIcon, FlaskIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers, prescriptions, medicines, labReports } from "../data/mockData";
 import { MemberIllustration } from "../components/PersonIllustrations";
+import EmptyStateIllustration from "../components/EmptyStateIllustration";
 import MemberTimeline, { TimelineVisit } from "../components/MemberTimeline";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
@@ -68,7 +69,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
         {tab === "Prescriptions" ? (
           memberRx.length === 0 ? (
-            <Text style={styles.empty}>No prescriptions recorded yet.</Text>
+            <EmptyState label="No prescriptions recorded yet." />
           ) : (
             <>
               <Text style={styles.hint}>Visit history, newest first — tap a visit or a medicine to open it</Text>
@@ -86,7 +87,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
               <Text style={styles.uploadLabBtnLabel}>Upload a lab report</Text>
             </AnimatedPressable>
             {memberLabs.length === 0 ? (
-              <Text style={styles.empty}>No lab reports uploaded yet.</Text>
+              <EmptyState label="No lab reports uploaded yet." />
             ) : (
               <View style={{ gap: 10, marginTop: 14 }}>
                 {memberLabs.map((lr, i) => (
@@ -113,7 +114,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
             )}
           </>
         ) : (
-          <Text style={styles.empty}>No {tab.toLowerCase()} recorded yet.</Text>
+          <EmptyState label={`No ${tab.toLowerCase()} recorded yet.`} />
         )}
       </ScrollView>
 
@@ -125,6 +126,15 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
         <PlusIcon color="#fff" size={22} />
       </TouchableOpacity>
     </SafeAreaView>
+  );
+}
+
+function EmptyState({ label }: { label: string }) {
+  return (
+    <View style={styles.emptyState}>
+      <EmptyStateIllustration size={110} />
+      <Text style={styles.empty}>{label}</Text>
+    </View>
   );
 }
 
@@ -177,7 +187,8 @@ const styles = StyleSheet.create({
   tab: { fontSize: 13, fontWeight: "600", color: colors.textFaint, paddingVertical: 10 },
   tabActive: { color: colors.primary, borderBottomWidth: 2, borderBottomColor: colors.primary },
   hint: { fontSize: 12, color: colors.textMuted, marginBottom: 16 },
-  empty: { fontSize: 13, color: colors.textMuted, textAlign: "center", marginTop: 40 },
+  emptyState: { alignItems: "center", marginTop: 28 },
+  empty: { fontSize: 13, color: colors.textMuted, textAlign: "center", marginTop: 14 },
   uploadLabBtn: {
     flexDirection: "row",
     alignItems: "center",

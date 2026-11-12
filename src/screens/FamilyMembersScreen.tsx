@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableO
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
-import { Avatar, Card, PrimaryButton, ScreenHeader } from "../components/ui";
+import { Card, PrimaryButton, ScreenHeader } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import { PlusIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers } from "../data/mockData";
@@ -28,7 +29,7 @@ export default function FamilyMembersScreen() {
           const access = accessLabel[m.access];
           return (
             <Card key={m.id} style={styles.memberCard}>
-              <Avatar initials={m.initials} color={m.color} size={46} />
+              <MemberAvatar member={m} size={46} />
               <View style={{ flex: 1 }}>
                 <Text style={type.bodyStrong}>
                   {m.name} {m.access === "owner" ? <Text style={{ color: colors.primary, fontSize: 11 }}>(You)</Text> : null}

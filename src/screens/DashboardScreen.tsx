@@ -4,7 +4,8 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Card } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
 import { BellIcon, PlusIcon, CheckIcon, CapsuleIcon, TabletIcon, SachetIcon } from "../components/icons";
@@ -47,7 +48,7 @@ export default function DashboardScreen({ navigation }: Props) {
                 style={styles.memberChip}
                 onPress={() => navigation.navigate("MemberProfile", { memberId: m.id })}
               >
-                <Avatar initials={m.initials} color={m.color} />
+                <MemberAvatar member={m} size={52} />
                 <Text style={styles.memberChipLabel}>{m.id === "harish" ? "You" : m.name.split(" ")[0]}</Text>
               </AnimatedPressable>
             ))}
