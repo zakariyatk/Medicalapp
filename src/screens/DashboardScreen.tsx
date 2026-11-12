@@ -61,6 +61,10 @@ export default function DashboardScreen({ navigation }: Props) {
   }, [doses, me.id]);
 
   const recent = prescriptions.slice(0, 2);
+  // Latest visit with a written diagnosis for each family member.
+  const screenable = familyMembers
+    .map((m) => prescriptions.find((rx) => rx.memberId === m.id && rx.diagnosis))
+    .filter((rx): rx is (typeof prescriptions)[number] => Boolean(rx));
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -118,6 +122,32 @@ export default function DashboardScreen({ navigation }: Props) {
                   onOpen={() => navigation.navigate("MedicineDetail", { medicineId: d.medicineId, memberId: d.memberId })}
                 />
               </FadeInUp>
+            );
+          })}
+        </View>
+
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Health screening</Text>
+        </View>
+        <View style={[styles.list, { gap: 10, paddingTop: 12 }]}>
+          {screenable.map((rx) => {
+            const who = familyMembers.find((m) => m.id === rx.memberId);
+            return (
+              <AnimatedPressable
+                key={rx.id}
+                scaleTo={0.98}
+                style={styles.screenCard}
+                onPress={() => navigation.navigate("HealthScreening", { prescriptionId: rx.id })}
+              >
+                <View style={styles.screenDot} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.screenTitle}>{rx.diagnosis}</Text>
+                  <Text style={styles.screenSub}>
+                    {who?.id === me.id ? "You" : who?.name.split(" ")[0]} · {rx.date} · see it on the body
+                  </Text>
+                </View>
+                <ChevronRightIcon color="#7A3E12" />
+              </AnimatedPressable>
             );
           })}
         </View>
@@ -322,4 +352,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  screenCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: "#FCE3CF",
+  },
+  screenDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: "#F59E5B", borderWidth: 3, borderColor: "#FFFFFF" },
+  screenTitle: { fontSize: 14, fontWeight: "700", color: "#2A1E16" },
+  screenSub: { fontSize: 12, color: "#7A3E12", marginTop: 2 },
 });

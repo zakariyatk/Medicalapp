@@ -22,6 +22,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
   const [tab, setTab] = useState("Prescriptions");
   const hasPhotoAvatar = Boolean(useAvatarTraits(member.id));
   const memberRx = prescriptions.filter((rx) => rx.memberId === member.id);
+  const latestDiagnosed = memberRx.find((rx) => rx.diagnosis);
   const memberLabs = labReports.filter((lr) => lr.memberId === member.id);
 
   const timelineVisits: TimelineVisit[] = memberRx.map((rx) => ({
@@ -56,6 +57,16 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
           <CameraIcon size={14} color={colors.text} />
           <Text style={styles.avatarBtnLabel}>{hasPhotoAvatar ? "Change avatar" : "Make avatar from photo"}</Text>
         </TouchableOpacity>
+        {latestDiagnosed ? (
+          <TouchableOpacity
+            style={[styles.avatarBtn, styles.screeningBtn]}
+            accessibilityRole="button"
+            onPress={() => navigation.navigate("HealthScreening", { prescriptionId: latestDiagnosed.id })}
+          >
+            <View style={styles.screeningDot} />
+            <Text style={[styles.avatarBtnLabel, { color: "#7A3E12" }]}>Health screening</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <View style={styles.tagsRow}>
@@ -239,4 +250,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
   },
   avatarBtnLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
+  screeningBtn: { marginTop: 8, backgroundColor: "#FCE3CF", borderColor: "#FCE3CF" },
+  screeningDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#F59E5B", borderWidth: 2, borderColor: "#FFFFFF" },
 });
