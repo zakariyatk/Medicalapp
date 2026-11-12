@@ -14,23 +14,6 @@ export function Tag({ label, bg, color }: { label: string; bg: string; color: st
   );
 }
 
-export function Avatar({ initials, color, size = 52 }: { initials: string; color: string; size?: number }) {
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: color,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text style={{ color: "#fff", fontWeight: "700", fontSize: size * 0.3 }}>{initials}</Text>
-    </View>
-  );
-}
-
 export function PrimaryButton({
   label,
   onPress,

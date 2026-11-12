@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
-import { Avatar, Card, ScreenHeader } from "../components/ui";
-import { PlusIcon, FlaskIcon } from "../components/icons";
+import { Card, ScreenHeader } from "../components/ui";
+import { PlusIcon, FlaskIcon, CameraIcon } from "../components/icons";
+import { useAvatarTraits } from "../lib/avatar";
 import { colors, type } from "../theme";
 import { familyMembers, prescriptions, medicines, labReports } from "../data/mockData";
+import { MemberIllustration } from "../components/PersonIllustrations";
+import EmptyStateIllustration from "../components/EmptyStateIllustration";
 import MemberTimeline, { TimelineVisit } from "../components/MemberTimeline";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
@@ -17,6 +20,7 @@ const TABS = ["Prescriptions", "Medicines", "Reports", "Vitals"];
 export default function MemberProfileScreen({ navigation, route }: Props) {
   const member = familyMembers.find((m) => m.id === route.params.memberId) ?? familyMembers[0];
   const [tab, setTab] = useState("Prescriptions");
+  const hasPhotoAvatar = Boolean(useAvatarTraits(member.id));
   const memberRx = prescriptions.filter((rx) => rx.memberId === member.id);
   const memberLabs = labReports.filter((lr) => lr.memberId === member.id);
 
@@ -35,15 +39,23 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title="Medical profile" onBack={() => navigation.goBack()} />
 
-      <View style={styles.profileRow}>
-        <Avatar initials={member.initials} color={member.color} size={60} />
-        <View>
-          <Text style={styles.name}>{member.name}</Text>
-          <Text style={styles.sub}>
-            {member.relation}
-            {member.age ? ` · ${member.age} years old` : ""} · DOB {member.dob}
-          </Text>
-        </View>
+      <View style={styles.heroCard}>
+        <View style={[styles.heroBlobA, { backgroundColor: `${member.color}1F` }]} />
+        <View style={[styles.heroBlobB, { backgroundColor: `${member.color}14` }]} />
+        <MemberIllustration member={member} width={132} height={196} />
+        <Text style={styles.name}>{member.name}</Text>
+        <Text style={styles.sub}>
+          {member.relation}
+          {member.age ? ` · ${member.age} years old` : ""} · DOB {member.dob}
+        </Text>
+        <TouchableOpacity
+          style={styles.avatarBtn}
+          accessibilityRole="button"
+          onPress={() => navigation.navigate("AvatarBuilder", { memberId: member.id })}
+        >
+          <CameraIcon size={14} color={colors.text} />
+          <Text style={styles.avatarBtnLabel}>{hasPhotoAvatar ? "Change avatar" : "Make avatar from photo"}</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.tagsRow}>
@@ -67,7 +79,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
         {tab === "Prescriptions" ? (
           memberRx.length === 0 ? (
-            <Text style={styles.empty}>No prescriptions recorded yet.</Text>
+            <EmptyState label="No prescriptions recorded yet." />
           ) : (
             <>
               <Text style={styles.hint}>Visit history, newest first — tap a visit or a medicine to open it</Text>
@@ -85,7 +97,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
               <Text style={styles.uploadLabBtnLabel}>Upload a lab report</Text>
             </AnimatedPressable>
             {memberLabs.length === 0 ? (
-              <Text style={styles.empty}>No lab reports uploaded yet.</Text>
+              <EmptyState label="No lab reports uploaded yet." />
             ) : (
               <View style={{ gap: 10, marginTop: 14 }}>
                 {memberLabs.map((lr, i) => (
@@ -112,7 +124,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
             )}
           </>
         ) : (
-          <Text style={styles.empty}>No {tab.toLowerCase()} recorded yet.</Text>
+          <EmptyState label={`No ${tab.toLowerCase()} recorded yet.`} />
         )}
       </ScrollView>
 
@@ -124,6 +136,15 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
         <PlusIcon color="#fff" size={22} />
       </TouchableOpacity>
     </SafeAreaView>
+  );
+}
+
+function EmptyState({ label }: { label: string }) {
+  return (
+    <View style={styles.emptyState}>
+      <EmptyStateIllustration size={110} />
+      <Text style={styles.empty}>{label}</Text>
+    </View>
   );
 }
 
@@ -147,9 +168,23 @@ function LabStatusTag({ status }: { status: string }) {
 }
 
 const styles = StyleSheet.create({
-  profileRow: { flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 20, marginTop: 6 },
-  name: { fontSize: 17, fontWeight: "800", color: colors.text },
-  sub: { fontSize: 12.5, color: colors.textMuted, marginTop: 2 },
+  heroCard: {
+    marginHorizontal: 20,
+    marginTop: 6,
+    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    overflow: "hidden",
+  },
+  heroBlobA: { position: "absolute", top: -50, right: -40, width: 150, height: 150, borderRadius: 75 },
+  heroBlobB: { position: "absolute", bottom: -60, left: -50, width: 160, height: 160, borderRadius: 80 },
+  name: { fontSize: 17, fontWeight: "800", color: colors.text, marginTop: 10 },
+  sub: { fontSize: 12.5, color: colors.textMuted, marginTop: 2, textAlign: "center" },
   tagsRow: { flexDirection: "row", gap: 8, flexWrap: "wrap", paddingHorizontal: 20, marginTop: 14 },
   tabsRow: {
     flexDirection: "row",
@@ -162,7 +197,8 @@ const styles = StyleSheet.create({
   tab: { fontSize: 13, fontWeight: "600", color: colors.textFaint, paddingVertical: 10 },
   tabActive: { color: colors.primary, borderBottomWidth: 2, borderBottomColor: colors.primary },
   hint: { fontSize: 12, color: colors.textMuted, marginBottom: 16 },
-  empty: { fontSize: 13, color: colors.textMuted, textAlign: "center", marginTop: 40 },
+  emptyState: { alignItems: "center", marginTop: 28 },
+  empty: { fontSize: 13, color: colors.textMuted, textAlign: "center", marginTop: 14 },
   uploadLabBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -190,4 +226,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarBtn: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 99,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+  },
+  avatarBtnLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
 });

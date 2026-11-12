@@ -4,7 +4,8 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Card } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import { ChevronRightIcon } from "../components/icons";
 import { colors, type } from "../theme";
 import { familyMembers } from "../data/mockData";
@@ -14,7 +15,7 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const ROWS = ["Account details", "Notification settings", "Privacy & data sharing", "Help & support"];
+const ROWS = ["Account details", "Find specialists", "Notification settings", "Privacy & data sharing", "Help & support"];
 
 export default function ProfileScreen({ navigation }: Props) {
   const you = familyMembers[0];
@@ -22,7 +23,7 @@ export default function ProfileScreen({ navigation }: Props) {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
         <View style={styles.profileRow}>
-          <Avatar initials={you.initials} color={you.color} size={56} />
+          <MemberAvatar member={you} size={56} />
           <View>
             <Text style={type.h2}>{you.name}</Text>
             <Text style={styles.sub}>Account owner</Text>
@@ -31,7 +32,11 @@ export default function ProfileScreen({ navigation }: Props) {
 
         <Card style={{ padding: 4 }}>
           {ROWS.map((r, i) => (
-            <TouchableOpacity key={r} style={[styles.row, i < ROWS.length - 1 && styles.rowBorder]}>
+            <TouchableOpacity
+              key={r}
+              style={[styles.row, i < ROWS.length - 1 && styles.rowBorder]}
+              onPress={r === "Find specialists" ? () => navigation.navigate("Specialists") : undefined}
+            >
               <Text style={styles.rowLabel}>{r}</Text>
               <ChevronRightIcon />
             </TouchableOpacity>

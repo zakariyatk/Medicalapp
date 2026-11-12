@@ -5,7 +5,7 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
 import { CheckIcon, ChevronRightIcon } from "../components/icons";
@@ -69,7 +69,7 @@ export default function DashboardScreen({ navigation }: Props) {
           <View style={styles.topRow}>
             <Text style={styles.date}>{todayLabel()}</Text>
             <Pressable accessibilityLabel="Your profile" onPress={() => navigation.navigate("Profile")}>
-              <Avatar initials={me.initials} color={ink} size={34} />
+              <MemberAvatar member={me} size={38} />
             </Pressable>
           </View>
 

@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, SafeAreaView, ScrollView } from "rea
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
 import { PrimaryButton, SecondaryButton } from "../components/ui";
+import { FatherIllustration, MotherIllustration, SonIllustration, DaughterIllustration } from "../components/PersonIllustrations";
 import { colors, type } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
@@ -19,6 +20,24 @@ export default function LoginScreen({ navigation }: Props) {
             <View style={styles.logoCrossRot} />
           </View>
           <Text style={styles.brand}>MediFam</Text>
+        </View>
+
+        <View style={styles.heroWrap}>
+          <View style={styles.heroBlob} />
+          <View style={styles.heroRow}>
+            <View style={{ marginRight: -8 }}>
+              <MotherIllustration width={70} height={102} />
+            </View>
+            <View style={{ marginHorizontal: -6, zIndex: 1 }}>
+              <FatherIllustration width={76} height={110} />
+            </View>
+            <View style={{ marginLeft: -8 }}>
+              <SonIllustration width={54} height={79} />
+            </View>
+            <View style={{ marginLeft: -10 }}>
+              <DaughterIllustration width={48} height={70} />
+            </View>
+          </View>
         </View>
 
         <Text style={styles.title}>Your family’s health,{"\n"}organized in one place</Text>
@@ -77,6 +96,16 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   brand: { fontSize: 20, fontWeight: "800", letterSpacing: -0.3, color: colors.text },
+  heroWrap: { alignItems: "center", marginBottom: 18 },
+  heroBlob: {
+    position: "absolute",
+    width: 220,
+    height: 140,
+    borderRadius: 100,
+    backgroundColor: colors.primaryTint,
+    top: -6,
+  },
+  heroRow: { flexDirection: "row", alignItems: "flex-end" },
   title: { ...type.h1, fontSize: 24, lineHeight: 31, textAlign: "center", marginBottom: 8, color: colors.text },
   subtitle: { fontSize: 14, color: colors.textMuted, textAlign: "center", lineHeight: 20, marginBottom: 32 },
   label: { fontSize: 13, fontWeight: "600", marginBottom: 6, color: colors.text },
