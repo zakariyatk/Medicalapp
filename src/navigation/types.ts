@@ -7,7 +7,7 @@ export type RootStackParamList = {
   PrescriptionDetail: { prescriptionId: string };
   MedicineDetail: { medicineId: string; prescriptionId?: string; memberId?: string };
   AddEditRecord: { memberId?: string; recordId?: string; recordType?: "Prescription" | "Lab report" | "Vaccination" };
-  FamilyMembers: undefined;
+  FamilyMembers: { invite?: boolean } | undefined;
   Specialists: undefined;
 };
 

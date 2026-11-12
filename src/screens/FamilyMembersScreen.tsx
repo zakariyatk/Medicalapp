@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
 import { Card, PrimaryButton, ScreenHeader } from "../components/ui";
@@ -18,13 +18,39 @@ const accessLabel: Record<string, { label: string; bg: string; color: string }> 
 
 export default function FamilyMembersScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [showInvite, setShowInvite] = useState(false);
+  const route = useRoute<RouteProp<RootStackParamList, "FamilyMembers">>();
+  // Inviting lives in Profile → settings. The Family tab only lists members; the same screen
+  // opened from settings shows the invite form.
+  const fromSettings = route.name === "FamilyMembers";
+  const [showInvite, setShowInvite] = useState(Boolean(route.params?.invite));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title="Family members" onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined} />
       <Text style={styles.subtitle}>Everyone with access to your family’s medical records</Text>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 10 }}>
+        {fromSettings && showInvite ? (
+          <Card style={styles.inviteForm}>
+            <Text style={type.h3}>New invitation</Text>
+            <View>
+              <Text style={styles.label}>Full name</Text>
+              <TextInput style={styles.input} placeholder="e.g. Devki Sakariya" placeholderTextColor={colors.textFaint} />
+            </View>
+            <View>
+              <Text style={styles.label}>Mobile number or email</Text>
+              <TextInput style={styles.input} placeholder="For their own login" placeholderTextColor={colors.textFaint} />
+            </View>
+            <View>
+              <Text style={styles.label}>Relationship</Text>
+              <TextInput style={styles.input} placeholder="e.g. Mother" placeholderTextColor={colors.textFaint} />
+            </View>
+            <View>
+              <Text style={styles.label}>Access level</Text>
+              <TextInput style={styles.input} placeholder="Full access / View only / Child profile" placeholderTextColor={colors.textFaint} />
+            </View>
+            <PrimaryButton label="Send invite" onPress={() => setShowInvite(false)} />
+          </Card>
+        ) : null}
         {familyMembers.map((m) => {
           const access = accessLabel[m.access];
           return (
@@ -59,33 +85,13 @@ export default function FamilyMembersScreen() {
           );
         })}
 
-        <TouchableOpacity style={styles.inviteBtn} onPress={() => setShowInvite((v) => !v)}>
+        {fromSettings && !showInvite ? (
+        <TouchableOpacity style={styles.inviteBtn} onPress={() => setShowInvite(true)}>
           <PlusIcon />
           <Text style={styles.inviteBtnLabel}>Invite a family member</Text>
         </TouchableOpacity>
-
-        {showInvite ? (
-          <Card style={styles.inviteForm}>
-            <Text style={type.h3}>New invitation</Text>
-            <View>
-              <Text style={styles.label}>Full name</Text>
-              <TextInput style={styles.input} placeholder="e.g. Devki Sakariya" placeholderTextColor={colors.textFaint} />
-            </View>
-            <View>
-              <Text style={styles.label}>Mobile number or email</Text>
-              <TextInput style={styles.input} placeholder="For their own login" placeholderTextColor={colors.textFaint} />
-            </View>
-            <View>
-              <Text style={styles.label}>Relationship</Text>
-              <TextInput style={styles.input} placeholder="e.g. Mother" placeholderTextColor={colors.textFaint} />
-            </View>
-            <View>
-              <Text style={styles.label}>Access level</Text>
-              <TextInput style={styles.input} placeholder="Full access / View only / Child profile" placeholderTextColor={colors.textFaint} />
-            </View>
-            <PrimaryButton label="Send invite" onPress={() => setShowInvite(false)} />
-          </Card>
         ) : null}
+
       </ScrollView>
     </SafeAreaView>
   );
