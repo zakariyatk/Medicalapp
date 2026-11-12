@@ -6,6 +6,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
 import { Card } from "../components/ui";
 import { MemberAvatar } from "../components/PersonIllustrations";
+import { MedicineArt } from "../components/MedicineIllustrations";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
 import { BellIcon, PlusIcon, CheckIcon, CapsuleIcon, TabletIcon, SachetIcon } from "../components/icons";
@@ -188,7 +189,7 @@ function MedicineDoseCard({
             <Text style={[styles.medCardIndexLabel, { color }]}>{memberInitials}</Text>
             <MedicineIcon medicineId={medicineId} size={12} color={color} />
           </View>
-          <MedicineIcon medicineId={medicineId} size={44} color={color} />
+          <MedicineArt medicineId={medicineId} size={68} />
           <Animated.View style={[styles.medCardCheckOverlay, { opacity: checkPop }]}>
             <View style={styles.medCardCheckDot}>
               <CheckIcon size={16} color="#fff" />
