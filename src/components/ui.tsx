@@ -78,7 +78,7 @@ export function ScreenHeader({
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
         {onBack ? (
           <IconButton accessibilityLabel="Go back" onPress={onBack}>
-            <Text style={{ fontSize: 16 }}>‹</Text>
+            <Text style={{ fontSize: 16, color: colors.text }}>‹</Text>
           </IconButton>
         ) : null}
         <Text style={type.h1}>{title}</Text>

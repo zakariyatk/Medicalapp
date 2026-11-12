@@ -2,7 +2,8 @@ import "react-native-url-polyfill/auto";
 import React from "react";
 import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme } from "@react-navigation/native";
+import { colors } from "./src/theme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootNavigator from "./src/navigation/RootNavigator";
 
@@ -24,8 +25,13 @@ if (Platform.OS !== "web") {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="dark" />
+      <NavigationContainer
+        theme={{
+          ...DarkTheme,
+          colors: { ...DarkTheme.colors, background: colors.bg, card: colors.surface, border: colors.border, text: colors.text, primary: colors.primary },
+        }}
+      >
+        <StatusBar style="light" />
         <RootNavigator />
       </NavigationContainer>
     </SafeAreaProvider>

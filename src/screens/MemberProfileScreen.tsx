@@ -5,7 +5,7 @@ import type { RootStackParamList } from "../navigation/types";
 import { Card, ScreenHeader } from "../components/ui";
 import { PlusIcon, FlaskIcon, CameraIcon } from "../components/icons";
 import { useAvatarTraits } from "../lib/avatar";
-import { colors, type } from "../theme";
+import { colors, type, warm } from "../theme";
 import { familyMembers, prescriptions, medicines, labReports } from "../data/mockData";
 import { MemberIllustration } from "../components/PersonIllustrations";
 import EmptyStateIllustration from "../components/EmptyStateIllustration";
@@ -64,7 +64,7 @@ export default function MemberProfileScreen({ navigation, route }: Props) {
             onPress={() => navigation.navigate("HealthScreening", { prescriptionId: latestDiagnosed.id })}
           >
             <View style={styles.screeningDot} />
-            <Text style={[styles.avatarBtnLabel, { color: "#7A3E12" }]}>Health screening</Text>
+            <Text style={[styles.avatarBtnLabel, { color: warm.text }]}>Health screening</Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -250,6 +250,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
   },
   avatarBtnLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
-  screeningBtn: { marginTop: 8, backgroundColor: "#FCE3CF", borderColor: "#FCE3CF" },
-  screeningDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#F59E5B", borderWidth: 2, borderColor: "#FFFFFF" },
+  screeningBtn: { marginTop: 8, backgroundColor: warm.bg, borderColor: warm.bg },
+  screeningDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: warm.dot, borderWidth: 2, borderColor: colors.bg },
 });

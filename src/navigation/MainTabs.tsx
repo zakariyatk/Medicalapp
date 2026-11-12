@@ -24,7 +24,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 
   const renderTab = (route: (typeof state.routes)[number], index: number) => {
     const isFocused = state.index === index;
-    const color = isFocused ? "#0D0D0D" : colors.textFaint;
+    const color = isFocused ? colors.text : colors.textFaint;
     return (
       <TouchableOpacity
         key={route.key}
@@ -47,7 +47,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         style={styles.fab}
         onPress={() => navigation.getParent()?.navigate("CapturePrescription")}
       >
-        <CameraIcon />
+        <CameraIcon color={colors.bg} />
       </TouchableOpacity>
       {rightRoutes.map((r, i) => renderTab(r, i + 2))}
     </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: "#F2F2F2",
+    borderTopColor: colors.border,
     backgroundColor: colors.surface,
     paddingHorizontal: 20,
     paddingTop: 10,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#0D0D0D",
+    backgroundColor: colors.text,
     alignItems: "center",
     justifyContent: "center",
     marginTop: -26,

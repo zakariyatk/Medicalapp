@@ -12,15 +12,15 @@ import { screenPrescription, type BodyRegion } from "../lib/healthScreening";
 type Props = NativeStackScreenProps<RootStackParamList, "HealthScreening">;
 
 const c = {
-  bg: "#FBF7F3",
-  ink: "#1F1A17",
-  muted: "#7A706A",
-  faint: "#A79D96",
+  bg: "#0D0B0A",
+  ink: "#F4EEE9",
+  muted: "#B3A79F",
+  faint: "#7D736C",
   accent: "#F59E5B",
-  accentSoft: "#FCE3CF",
-  card: "#FFFFFF",
-  line: "#EFE7E0",
-  sheet: "#F7F3EF",
+  accentSoft: "#3A2618",
+  card: "#1B1715",
+  line: "#2E2723",
+  sheet: "#141110",
 };
 
 const OVERVIEW = "Overview";
@@ -133,7 +133,7 @@ export default function HealthScreeningScreen({ navigation, route }: Props) {
           {s.watchFor.length ? (
             <View style={styles.card}>
               <View style={styles.inline}>
-                <WarningIcon color="#B45309" />
+                <WarningIcon color="#F59E0B" />
                 <Text style={styles.cardLabel}>Watch for</Text>
               </View>
               {s.watchFor.map((w) => (
@@ -167,7 +167,7 @@ export default function HealthScreeningScreen({ navigation, route }: Props) {
           {s.relatedLab ? (
             <View style={styles.card}>
               <View style={styles.inline}>
-                <FlaskIcon size={16} color="#4F46E5" />
+                <FlaskIcon size={16} color="#8B93F8" />
                 <Text style={styles.cardLabel}>Latest lab report</Text>
               </View>
               <Text style={styles.cardValueSm}>{s.relatedLab.name}</Text>
@@ -198,7 +198,7 @@ function Stat({ label, value, note }: { label: string; value: string; note: stri
 
 function PersonIcon() {
   return (
-    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={c.ink} strokeWidth={1.8} strokeLinecap="round">
+    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#1F1A17" strokeWidth={1.8} strokeLinecap="round">
       <Circle cx={12} cy={4.5} r={2} />
       <Path d="M5 9l7 1 7-1M12 10v5M12 15l-3 6M12 15l3 6" />
     </Svg>
@@ -207,7 +207,7 @@ function PersonIcon() {
 
 function PlusGlyph() {
   return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={c.ink} strokeWidth={2} strokeLinejoin="round">
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#1F1A17" strokeWidth={2} strokeLinejoin="round">
       <Path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" />
     </Svg>
   );
@@ -215,7 +215,7 @@ function PlusGlyph() {
 
 const styles = StyleSheet.create({
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingTop: 10 },
-  roundBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" },
+  roundBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: c.card, alignItems: "center", justifyContent: "center" },
   infoBtn: {
     width: 30,
     height: 30,
@@ -236,10 +236,10 @@ const styles = StyleSheet.create({
     backgroundColor: c.accentSoft,
     fontSize: 12.5,
     lineHeight: 18,
-    color: "#5A3A22",
+    color: "#F5CBA7",
   },
   tabs: { gap: 8, paddingHorizontal: 20, paddingVertical: 14 },
-  tab: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: "#E3DAD2", backgroundColor: "#FFFFFF" },
+  tab: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 99, borderWidth: 1, borderColor: c.line, backgroundColor: c.card },
   tabOn: { backgroundColor: c.accent, borderColor: c.accent },
   tabLabel: { fontSize: 13, fontWeight: "500", color: c.ink },
   tabLabelOn: { color: "#1F1A17", fontWeight: "600" },
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10,
   },
-  handle: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#DCD3CB", marginBottom: 4 },
+  handle: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#3A332E", marginBottom: 4 },
   grid: { flexDirection: "row", gap: 10 },
   colTall: { flex: 1 },
   col: { flex: 1, gap: 10 },
@@ -279,6 +279,6 @@ const styles = StyleSheet.create({
   bullet: { fontSize: 13, color: c.ink, lineHeight: 19 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 99, backgroundColor: c.accentSoft },
-  chipText: { fontSize: 12, fontWeight: "600", color: "#7A3E12" },
+  chipText: { fontSize: 12, fontWeight: "600", color: "#F5B98A" },
   disclaimer: { fontSize: 11.5, color: c.faint, textAlign: "center", marginTop: 6 },
 });

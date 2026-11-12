@@ -119,7 +119,7 @@ export default function AvatarBuilderScreen({ navigation, route }: Props) {
 
         <View style={styles.actions}>
           <Pressable style={[styles.action, styles.actionDark]} onPress={() => pick("library")} disabled={working}>
-            <GalleryIcon size={16} color="#fff" />
+            <GalleryIcon size={16} color={colors.bg} />
             <Text style={styles.actionDarkLabel}>{photoUri ? "Choose another" : "Upload photo"}</Text>
           </Pressable>
           <Pressable style={styles.action} onPress={() => pick("camera")} disabled={working}>
@@ -255,13 +255,13 @@ const styles = StyleSheet.create({
   },
   actionDark: { backgroundColor: colors.text, borderColor: colors.text },
   actionLabel: { fontSize: 14, fontWeight: "700", color: colors.text },
-  actionDarkLabel: { fontSize: 14, fontWeight: "700", color: "#fff" },
+  actionDarkLabel: { fontSize: 14, fontWeight: "700", color: colors.bg },
   error: { fontSize: 13, color: colors.red, textAlign: "center" },
   privacy: { fontSize: 11.5, color: colors.textFaint, textAlign: "center", marginTop: -8 },
   sectionTitle: { fontSize: 12, fontWeight: "700", color: colors.text, letterSpacing: 0.8, textTransform: "uppercase" },
   wrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   swatchRing: { padding: 3, borderRadius: 22, borderWidth: 2, borderColor: "transparent" },
-  swatch: { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: "rgba(0,0,0,0.08)" },
+  swatch: { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)" },
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -272,6 +272,6 @@ const styles = StyleSheet.create({
   },
   chipOn: { backgroundColor: colors.text, borderColor: colors.text },
   chipLabel: { fontSize: 13, fontWeight: "600", color: colors.text },
-  chipLabelOn: { color: "#fff" },
+  chipLabelOn: { color: colors.bg },
   reset: { fontSize: 13, color: colors.textMuted, textDecorationLine: "underline" },
 });
