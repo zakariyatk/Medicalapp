@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import Svg, { Path, Circle, Rect, Ellipse, Line } from "react-native-svg";
 
 export type IllustrationProps = { width?: number; height?: number };
@@ -224,7 +225,94 @@ export function GrandmotherIllustration({ width = 200, height = 300 }: Illustrat
   );
 }
 
-type MemberLike = { id: string; age?: number; relation?: string };
+/** Small bust/face illustrations — same characters, cropped for avatar-sized circles (lists, chips). */
+function FatherFace({ size = 44 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect x="0" y="74" width="100" height="26" fill="#0F766E" />
+      <Path d="M41 72 L41 56 L59 56 L59 72 Z" fill={SKIN} />
+      <Circle cx="50" cy="42" r="26" fill={SKIN} />
+      <Path d="M24 40 Q24 14 50 13 Q76 14 76 40 Q71 28 61 27 Q55 35 50 27 Q45 35 39 27 Q29 28 24 40 Z" fill={HAIR_DARK} />
+      <Ellipse cx="40" cy="44" rx="2.8" ry="3.6" fill="#2B2420" />
+      <Ellipse cx="60" cy="44" rx="2.8" ry="3.6" fill="#2B2420" />
+      <Path d="M40 54 Q50 59 60 54" stroke="#2B2420" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+function MotherFace({ size = 44 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect x="0" y="76" width="100" height="24" fill="#4F46E5" />
+      <Path d="M42 72 L42 58 L58 58 L58 72 Z" fill={SKIN} />
+      <Circle cx="50" cy="42" r="25" fill={SKIN} />
+      <Path
+        d="M26 38 Q24 12 50 11 Q76 12 74 38 Q78 58 70 76 Q68 58 68 42 Q60 49 50 42 Q40 49 32 42 Q32 58 30 76 Q22 58 26 38 Z"
+        fill="#3A2A24"
+      />
+      <Ellipse cx="41" cy="44" rx="2.6" ry="3.4" fill="#2B2420" />
+      <Ellipse cx="59" cy="44" rx="2.6" ry="3.4" fill="#2B2420" />
+      <Path d="M41 54 Q50 58 59 54" stroke="#B5527A" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+function SonFace({ size = 44 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect x="0" y="78" width="100" height="22" fill="#D97706" />
+      <Path d="M43 74 L43 62 L57 62 L57 74 Z" fill={SKIN_CHILD} />
+      <Circle cx="50" cy="44" r="29" fill={SKIN_CHILD} />
+      <Path d="M20 42 Q18 14 50 13 Q82 14 80 42 Q74 28 62 28 Q56 36 50 28 Q44 36 38 28 Q26 28 20 42 Z" fill={HAIR_DARK} />
+      <Path d="M44 22 L40 16" stroke={HAIR_DARK} strokeWidth={4.5} strokeLinecap="round" />
+      <Ellipse cx="38" cy="46" rx="3" ry="3.8" fill="#2B2420" />
+      <Ellipse cx="62" cy="46" rx="3" ry="3.8" fill="#2B2420" />
+      <Circle cx="30" cy="54" r="4.4" fill="#F2A7B5" opacity={0.5} />
+      <Circle cx="70" cy="54" r="4.4" fill="#F2A7B5" opacity={0.5} />
+      <Path d="M39 58 Q50 65 61 58" stroke="#2B2420" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+function DaughterFace({ size = 44 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect x="0" y="80" width="100" height="20" fill="#BE185D" />
+      <Path d="M44 76 L44 65 L56 65 L56 76 Z" fill={SKIN_CHILD} />
+      <Circle cx="50" cy="47" r="29" fill={SKIN_CHILD} />
+      <Path d="M18 45 Q16 16 50 15 Q84 16 82 45 Q75 30 62 29 Q55 38 50 29 Q45 38 38 29 Q25 30 18 45 Z" fill="#3A2A24" />
+      <Circle cx="12" cy="56" r="9.5" fill="#3A2A24" />
+      <Circle cx="88" cy="56" r="9.5" fill="#3A2A24" />
+      <Circle cx="12" cy="50" r="3.4" fill="#F472B6" />
+      <Circle cx="88" cy="50" r="3.4" fill="#F472B6" />
+      <Ellipse cx="38" cy="49" rx="3" ry="3.8" fill="#2B2420" />
+      <Ellipse cx="62" cy="49" rx="3" ry="3.8" fill="#2B2420" />
+      <Circle cx="30" cy="57" r="4.4" fill="#F2A7B5" opacity={0.55} />
+      <Circle cx="70" cy="57" r="4.4" fill="#F2A7B5" opacity={0.55} />
+      <Path d="M39 61 Q50 67 61 61" stroke="#2B2420" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+function GrandmotherFace({ size = 44 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect x="0" y="76" width="100" height="24" fill="#8B8FA3" />
+      <Path d="M42 72 L42 60 L58 60 L58 72 Z" fill={SKIN} />
+      <Circle cx="50" cy="44" r="25" fill={SKIN} />
+      <Path d="M27 42 Q25 15 50 14 Q75 15 73 42 Q68 29 59 27 Q53 36 50 27 Q47 36 41 27 Q32 29 27 42 Z" fill={HAIR_GRAY} />
+      <Circle cx="50" cy="16" r="9" fill={HAIR_GRAY} />
+      <Circle cx="39" cy="46" r="7" stroke="#4B5568" strokeWidth={1.8} fill="none" />
+      <Circle cx="61" cy="46" r="7" stroke="#4B5568" strokeWidth={1.8} fill="none" />
+      <Line x1="46" y1="46" x2="54" y2="46" stroke="#4B5568" strokeWidth={1.8} />
+      <Ellipse cx="39" cy="46" rx="2.3" ry="3" fill="#2B2420" />
+      <Ellipse cx="61" cy="46" rx="2.3" ry="3" fill="#2B2420" />
+      <Path d="M40 56 Q50 60 60 56" stroke="#2B2420" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+type MemberLike = { id: string; age?: number; relation?: string; color?: string };
 
 type Kind = "father" | "mother" | "son" | "daughter" | "grandmother";
 
@@ -262,4 +350,39 @@ export function MemberIllustration({ member, width, height }: IllustrationProps 
     default:
       return <FatherIllustration width={width} height={height} />;
   }
+}
+
+function MemberFace({ member, size }: { member: MemberLike; size: number }) {
+  switch (resolveKind(member)) {
+    case "mother":
+      return <MotherFace size={size} />;
+    case "son":
+      return <SonFace size={size} />;
+    case "daughter":
+      return <DaughterFace size={size} />;
+    case "grandmother":
+      return <GrandmotherFace size={size} />;
+    case "father":
+    default:
+      return <FatherFace size={size} />;
+  }
+}
+
+/** Small circular cartoon-avatar, same character as the full illustration — for list rows, chips, headers. */
+export function MemberAvatar({ member, size = 48 }: { member: MemberLike; size?: number }) {
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        overflow: "hidden",
+        backgroundColor: member.color ? `${member.color}1F` : "#EDEFF2",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <MemberFace member={member} size={size} />
+    </View>
+  );
 }

@@ -4,10 +4,12 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { MainTabsParamList, RootStackParamList } from "../navigation/types";
-import { Avatar, Card } from "../components/ui";
+import { Card } from "../components/ui";
+import { MemberAvatar } from "../components/PersonIllustrations";
+import { MedicineArt } from "../components/MedicineIllustrations";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
-import { BellIcon, PlusIcon, CheckIcon, CapsuleIcon, TabletIcon, SachetIcon } from "../components/icons";
+import { BellIcon, PlusIcon, CheckIcon, ChevronRightIcon } from "../components/icons";
 import { colors, type, shadow } from "../theme";
 import { familyMembers, medicines, prescriptions, initialDoses } from "../data/mockData";
 
@@ -22,6 +24,10 @@ export default function DashboardScreen({ navigation }: Props) {
     setDoses((prev) => prev.map((d) => (d.id === id ? { ...d, taken: !d.taken } : d)));
 
   const recent = prescriptions.slice(0, 2);
+
+  const doseLanes = familyMembers
+    .map((m) => ({ member: m, doses: doses.filter((d) => d.memberId === m.id) }))
+    .filter((lane) => lane.doses.length > 0);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -47,7 +53,7 @@ export default function DashboardScreen({ navigation }: Props) {
                 style={styles.memberChip}
                 onPress={() => navigation.navigate("MemberProfile", { memberId: m.id })}
               >
-                <Avatar initials={m.initials} color={m.color} />
+                <MemberAvatar member={m} size={52} />
                 <Text style={styles.memberChipLabel}>{m.id === "harish" ? "You" : m.name.split(" ")[0]}</Text>
               </AnimatedPressable>
             ))}
@@ -83,34 +89,45 @@ export default function DashboardScreen({ navigation }: Props) {
 
         <View style={styles.sectionHeader}>
           <Text style={type.h2}>Today’s medicines</Text>
+          <Text style={styles.sectionHint}>Who’s taking what, in order</Text>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
-          {doses.map((d, i) => {
-            const med = medicines[d.medicineId];
-            const member = familyMembers.find((m) => m.id === d.memberId);
-            return (
-              <MedicineDoseCard
-                key={d.id}
-                medicineName={med.name}
-                medicineId={d.medicineId}
-                memberFirstName={member?.name.split(" ")[0] ?? "—"}
-                memberInitials={member?.initials ?? "?"}
-                dosage={med.dosage}
-                time={d.time}
-                color={member?.color ?? colors.primary}
-                taken={d.taken}
-                delay={180 + i * 90}
-                onPress={() => toggleDose(d.id)}
-              />
-            );
-          })}
-          <View style={{ width: 20 }} />
-        </ScrollView>
+        <View style={{ gap: 14 }}>
+          {doseLanes.map((lane, li) => (
+            <FadeInUp key={lane.member.id} delay={180 + li * 90}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ paddingLeft: 20 }}
+                contentContainerStyle={styles.flowRow}
+              >
+                <FlowAvatarNode member={lane.member} />
+                {lane.doses.map((d) => {
+                  const med = medicines[d.medicineId];
+                  return (
+                    <React.Fragment key={d.id}>
+                      <FlowConnector />
+                      <MedicineDoseCard
+                        medicineName={med.name}
+                        medicineId={d.medicineId}
+                        dosage={med.dosage}
+                        time={d.time}
+                        color={lane.member.color}
+                        taken={d.taken}
+                        onPress={() => toggleDose(d.id)}
+                      />
+                    </React.Fragment>
+                  );
+                })}
+                <View style={{ width: 20 }} />
+              </ScrollView>
+            </FadeInUp>
+          ))}
+        </View>
 
         <View style={styles.sectionHeader}>
           <Text style={type.h2}>Recent prescriptions</Text>
         </View>
-        <FadeInUp delay={180 + doses.length * 90 + 80}>
+        <FadeInUp delay={180 + doseLanes.length * 90 + 80}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
             {recent.map((rx) => (
               <AnimatedPressable key={rx.id} onPress={() => navigation.navigate("PrescriptionDetail", { prescriptionId: rx.id })}>
@@ -132,79 +149,69 @@ export default function DashboardScreen({ navigation }: Props) {
   );
 }
 
-function MedicineIcon({ medicineId, size, color }: { medicineId: string; size: number; color: string }) {
-  if (medicineId === "paracetamol") return <TabletIcon size={size} color={color} />;
-  if (medicineId === "ors") return <SachetIcon size={size} color={color} />;
-  return <CapsuleIcon size={size} color={color} />;
+/** The flow-chart's starting node for a member's lane — their illustrated avatar. */
+function FlowAvatarNode({ member }: { member: (typeof familyMembers)[number] }) {
+  return (
+    <View style={styles.flowAvatarNode}>
+      <MemberAvatar member={member} size={52} />
+      <Text style={styles.flowAvatarLabel} numberOfLines={1}>
+        {member.id === "harish" ? "You" : member.name.split(" ")[0]}
+      </Text>
+    </View>
+  );
+}
+
+/** A short connecting line + arrow between flow-chart nodes. */
+function FlowConnector() {
+  return (
+    <View style={styles.flowConnector}>
+      <View style={styles.flowConnectorLine} />
+      <ChevronRightIcon size={12} color={colors.textFaint} />
+    </View>
+  );
 }
 
 function MedicineDoseCard({
   medicineName,
   medicineId,
-  memberFirstName,
-  memberInitials,
   dosage,
   time,
   color,
   taken,
-  delay = 0,
   onPress,
 }: {
   medicineName: string;
   medicineId: string;
-  memberFirstName: string;
-  memberInitials: string;
   dosage: string;
   time: string;
   color: string;
   taken: boolean;
-  delay?: number;
   onPress: () => void;
 }) {
-  const [pop] = useState(() => new Animated.Value(0));
   const [checkPop] = useState(() => new Animated.Value(taken ? 1 : 0));
-
-  useEffect(() => {
-    const anim = Animated.spring(pop, { toValue: 1, useNativeDriver: true, delay, speed: 14, bounciness: 8 });
-    anim.start();
-    return () => anim.stop();
-  }, [pop, delay]);
 
   useEffect(() => {
     Animated.spring(checkPop, { toValue: taken ? 1 : 0, useNativeDriver: true, speed: 26, bounciness: 10 }).start();
   }, [taken, checkPop]);
 
   return (
-    <Animated.View
-      style={{
-        opacity: pop,
-        transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }],
-      }}
-    >
-      <AnimatedPressable onPress={onPress} style={styles.medCard}>
-        <View style={[styles.medCardArt, { backgroundColor: `${color}1F` }]}>
-          <View style={styles.medCardIndex}>
-            <Text style={[styles.medCardIndexLabel, { color }]}>{memberInitials}</Text>
-            <MedicineIcon medicineId={medicineId} size={12} color={color} />
+    <AnimatedPressable onPress={onPress} style={styles.medCard}>
+      <View style={[styles.medCardArt, { backgroundColor: `${color}1F` }]}>
+        <MedicineArt medicineId={medicineId} size={68} />
+        <Animated.View style={[styles.medCardCheckOverlay, { opacity: checkPop }]}>
+          <View style={styles.medCardCheckDot}>
+            <CheckIcon size={16} color="#fff" />
           </View>
-          <MedicineIcon medicineId={medicineId} size={44} color={color} />
-          <Animated.View style={[styles.medCardCheckOverlay, { opacity: checkPop }]}>
-            <View style={styles.medCardCheckDot}>
-              <CheckIcon size={16} color="#fff" />
-            </View>
-          </Animated.View>
-        </View>
-        <View style={styles.medCardBody}>
-          <Text style={styles.medCardName} numberOfLines={2}>
-            {medicineName}
-          </Text>
-          <Text style={styles.medCardSub}>
-            {memberFirstName} · {dosage}
-          </Text>
-          <Text style={styles.medCardTime}>{time}</Text>
-        </View>
-      </AnimatedPressable>
-    </Animated.View>
+        </Animated.View>
+      </View>
+      <View style={styles.medCardBody}>
+        <Text style={styles.medCardName} numberOfLines={2}>
+          {medicineName}
+        </Text>
+        <Text style={styles.medCardSub}>{dosage}</Text>
+        <Text style={styles.medCardTime}>{time}</Text>
+      </View>
+    </AnimatedPressable>
   );
 }
 
@@ -263,9 +270,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  sectionHint: { fontSize: 11.5, color: colors.textFaint },
+  flowRow: { flexDirection: "row", alignItems: "center" },
+  flowAvatarNode: { alignItems: "center", width: 64 },
+  flowAvatarLabel: { fontSize: 11, marginTop: 6, color: colors.text, fontWeight: "600" },
+  flowConnector: { width: 26, flexDirection: "row", alignItems: "center", justifyContent: "center" },
+  flowConnectorLine: { width: 12, height: 2, borderRadius: 1, backgroundColor: colors.borderStrong },
   medCard: {
     width: 150,
-    marginRight: 12,
     backgroundColor: colors.surface,
     borderRadius: 20,
     borderWidth: 1,
@@ -278,14 +290,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  medCardIndex: {
-    position: "absolute",
-    left: 10,
-    top: 8,
-    alignItems: "center",
-    gap: 2,
-  },
-  medCardIndexLabel: { fontSize: 13, fontWeight: "800" },
   medCardCheckOverlay: {
     position: "absolute",
     top: 0,
