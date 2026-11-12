@@ -5,6 +5,7 @@ import LoginScreen from "../screens/LoginScreen";
 import MainTabs from "./MainTabs";
 import MemberProfileScreen from "../screens/MemberProfileScreen";
 import AvatarBuilderScreen from "../screens/AvatarBuilderScreen";
+import HealthScreeningScreen from "../screens/HealthScreeningScreen";
 import FamilyMembersScreen from "../screens/FamilyMembersScreen";
 import CapturePrescriptionScreen from "../screens/CapturePrescriptionScreen";
 import PrescriptionDetailScreen from "../screens/PrescriptionDetailScreen";
@@ -21,6 +22,7 @@ export default function RootNavigator() {
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="MemberProfile" component={MemberProfileScreen} />
       <Stack.Screen name="AvatarBuilder" component={AvatarBuilderScreen} />
+      <Stack.Screen name="HealthScreening" component={HealthScreeningScreen} />
       <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen} />
       <Stack.Screen name="CapturePrescription" component={CapturePrescriptionScreen} options={{ presentation: "fullScreenModal" }} />
       <Stack.Screen name="PrescriptionDetail" component={PrescriptionDetailScreen} />

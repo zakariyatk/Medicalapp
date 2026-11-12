@@ -18,6 +18,8 @@ export type ExtractedPrescription = {
   hospital: string;
   date: string;
   time: string;
+  /** The diagnosis as the doctor wrote it — used by the health screening view. */
+  diagnosis: string;
   medicines: ExtractedMedicine[];
 };
 
@@ -30,6 +32,7 @@ export async function extractPrescriptionFromImage(imageUri: string): Promise<Ex
     hospital: "Apollo Hospital",
     date: "07 Nov 2026",
     time: "11:20 AM",
+    diagnosis: "Acute tonsillitis (throat infection) with fever",
     medicines: [
       { name: "Amoxicillin 500mg", dosage: "1 capsule", frequency: "3x daily", duration: "5 days" },
       { name: "Paracetamol 250mg", dosage: "1 tablet", frequency: "As needed for fever", duration: "" },
