@@ -6,9 +6,9 @@ export const colors = {
   text: "#1C2430",
   textMuted: "#6B7280",
   textFaint: "#9AA3AE",
-  primary: "#0F766E",
-  primaryDark: "#0B5B55",
-  primaryTint: "#EAF4F2",
+  primary: "#4F46E5",
+  primaryDark: "#3730A3",
+  primaryTint: "#F3F0FF",
   indigo: "#4F46E5",
   indigoTint: "#F3F0FF",
   pink: "#BE185D",
@@ -21,7 +21,7 @@ export const colors = {
   green: "#15803D",
 };
 
-export const avatarColors = [colors.primary, colors.indigo, colors.amber, colors.pink, "#0369A1"];
+export const avatarColors = ["#0F766E", colors.indigo, colors.amber, colors.pink, "#0369A1"];
 
 export const radius = { sm: 10, md: 12, lg: 16, xl: 20, pill: 999 };
 
