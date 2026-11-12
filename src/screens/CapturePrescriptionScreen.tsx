@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   banner: { flexDirection: "row", alignItems: "center", gap: 8, borderRadius: 10, padding: 12 },
   bannerText: { fontSize: 12.5, flex: 1 },
   fileRow: { flexDirection: "row", gap: 12, alignItems: "center", backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: 14 },
-  filePreview: { width: 46, height: 58, borderRadius: 8, backgroundColor: "#EDEFF2", alignItems: "center", justifyContent: "center" },
+  filePreview: { width: 46, height: 58, borderRadius: 8, backgroundColor: colors.borderStrong, alignItems: "center", justifyContent: "center" },
   fileSub: { fontSize: 12, color: colors.textMuted, marginTop: 3 },
   fieldLabel: { fontSize: 12, fontWeight: "600", marginBottom: 5, color: colors.text },
   fieldInput: { height: 46, borderRadius: 10, borderWidth: 1.5, borderColor: colors.borderStrong, paddingHorizontal: 14, fontSize: 14, color: colors.text, backgroundColor: colors.surface },

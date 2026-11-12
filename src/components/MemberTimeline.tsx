@@ -30,7 +30,7 @@ const NODE_SIZE_REST = 14;
 const TOP_MARGIN = 36;
 const BOTTOM_MARGIN = 24;
 
-const RAIL_COLOR = "#CFE8E4";
+const RAIL_COLOR = "#1F3F3B";
 const STUB_COLOR = colors.borderStrong;
 const CONNECTOR_COLOR = colors.primary;
 const BRANCH_COLOR = colors.textFaint;
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: colors.primaryTint,
     borderWidth: 1,
-    borderColor: "#D7ECE9",
+    borderColor: colors.border,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",

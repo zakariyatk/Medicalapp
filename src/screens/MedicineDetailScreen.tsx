@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: colors.primaryTint,
     borderWidth: 1,
-    borderColor: "#D7ECE9",
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",

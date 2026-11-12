@@ -4,7 +4,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/types";
 import { Card, IconButton } from "../components/ui";
 import { BackIcon, EditIcon, ShareIcon, DoctorIcon, HospitalIcon, CalendarIcon, DocIcon, ChevronRightIcon, CapsuleIcon, TabletIcon, SachetIcon } from "../components/icons";
-import { colors, type } from "../theme";
+import { colors, type, warm } from "../theme";
 import { prescriptions, medicines, familyMembers } from "../data/mockData";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PrescriptionDetail">;
@@ -65,7 +65,7 @@ export default function PrescriptionDetailScreen({ navigation, route }: Props) {
             <Text style={styles.screeningTitle}>Health screening</Text>
             <Text style={styles.screeningSub}>{rx.diagnosis ? `${rx.diagnosis} · see it on the body` : "See this visit on a body map"}</Text>
           </View>
-          <ChevronRightIcon color="#7A3E12" />
+          <ChevronRightIcon color={warm.sub} />
         </TouchableOpacity>
 
         <View style={styles.scanRow}>
@@ -130,9 +130,9 @@ const styles = StyleSheet.create({
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 20, paddingBottom: 0 },
   doctorIconWrap: { width: 48, height: 48, borderRadius: 12, backgroundColor: colors.primaryTint, alignItems: "center", justifyContent: "center" },
   doctorSub: { fontSize: 12.5, color: colors.textMuted, marginTop: 2 },
-  infoBlock: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: "#F0F1F3", gap: 10 },
+  infoBlock: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border, gap: 10 },
   scanRow: { flexDirection: "row", gap: 10 },
-  scanThumb: { width: 72, height: 92, borderRadius: 12, backgroundColor: "#EDEFF2", borderWidth: 1, borderColor: colors.borderStrong, alignItems: "center", justifyContent: "center", gap: 4 },
+  scanThumb: { width: 72, height: 92, borderRadius: 12, backgroundColor: colors.borderStrong, borderWidth: 1, borderColor: colors.borderStrong, alignItems: "center", justifyContent: "center", gap: 4 },
   scanThumbLabel: { fontSize: 9.5, color: colors.textFaint },
   scanHint: { fontSize: 12, color: colors.textMuted, flex: 1, alignSelf: "center", lineHeight: 18 },
   medRow: { flexDirection: "row", gap: 12, alignItems: "center", padding: 14 },
@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderRadius: 18,
-    backgroundColor: "#FCE3CF",
+    backgroundColor: warm.bg,
   },
-  screeningDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: "#F59E5B", borderWidth: 3, borderColor: "#FFFFFF" },
-  screeningTitle: { fontSize: 15, fontWeight: "700", color: "#2A1E16" },
-  screeningSub: { fontSize: 12.5, color: "#7A3E12", marginTop: 2 },
+  screeningDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: warm.dot, borderWidth: 3, borderColor: colors.bg },
+  screeningTitle: { fontSize: 15, fontWeight: "700", color: warm.text },
+  screeningSub: { fontSize: 12.5, color: warm.sub, marginTop: 2 },
 });

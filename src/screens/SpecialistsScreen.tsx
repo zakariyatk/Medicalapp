@@ -1,3 +1,4 @@
+import { colors } from "../theme";
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,7 +40,7 @@ export default function SpecialistsScreen({ navigation }: Props) {
 
           <View style={styles.card}>
             <View style={styles.cardIconCircle}>
-              <HeartIcon size={24} color="#0F766E" />
+              <HeartIcon size={24} color={colors.primary} />
             </View>
             <Text style={styles.cardTitle}>Cardiologist</Text>
             <Text style={styles.cardBody}>
@@ -60,7 +61,7 @@ export default function SpecialistsScreen({ navigation }: Props) {
               <TouchableOpacity accessibilityRole="button" style={styles.sideCard}>
                 <View style={styles.sideCardTop}>
                   <View style={styles.sideIconCircle}>
-                    <LungsIcon size={20} color="#0F766E" />
+                    <LungsIcon size={20} color={colors.primary} />
                   </View>
                   <ChevronRightIcon size={14} color={ACCENT} />
                 </View>
@@ -69,7 +70,7 @@ export default function SpecialistsScreen({ navigation }: Props) {
               <TouchableOpacity accessibilityRole="button" style={styles.sideCard}>
                 <View style={styles.sideCardTop}>
                   <View style={styles.sideIconCircle}>
-                    <BrainIcon size={20} color="#0F766E" />
+                    <BrainIcon size={20} color={colors.primary} />
                   </View>
                   <ChevronRightIcon size={14} color={ACCENT} />
                 </View>
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
     marginLeft: -4,
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     borderRadius: 22,
     padding: 20,
     shadowColor: "#000",
@@ -149,13 +150,13 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#EAF4F2",
+    backgroundColor: colors.primaryTint,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
   },
-  cardTitle: { fontSize: 18, fontWeight: "800", color: "#1C2430", marginBottom: 6 },
-  cardBody: { fontSize: 12.5, lineHeight: 18, color: "#8A94A6" },
+  cardTitle: { fontSize: 18, fontWeight: "800", color: colors.text, marginBottom: 6 },
+  cardBody: { fontSize: 12.5, lineHeight: 18, color: colors.textMuted },
   moreInfo: { color: ACCENT, fontWeight: "700" },
   ctaBtn: {
     marginTop: 16,
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
   doctorWrap: { flex: 1.2, alignItems: "center" },
   sideCards: { flex: 1, gap: 14 },
   sideCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     borderRadius: 18,
     paddingVertical: 14,
     paddingHorizontal: 14,
@@ -194,11 +195,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#EAF4F2",
+    backgroundColor: colors.primaryTint,
     alignItems: "center",
     justifyContent: "center",
   },
-  sideCardLabel: { fontSize: 13, fontWeight: "700", color: "#1C2430" },
+  sideCardLabel: { fontSize: 13, fontWeight: "700", color: colors.text },
   footerText: {
     marginTop: 24,
     fontSize: 12,

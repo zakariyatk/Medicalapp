@@ -9,7 +9,7 @@ import { MemberAvatar } from "../components/PersonIllustrations";
 import FadeInUp from "../components/FadeInUp";
 import AnimatedPressable from "../components/AnimatedPressable";
 import { CheckIcon, ChevronRightIcon } from "../components/icons";
-import { colors } from "../theme";
+import { colors, warm } from "../theme";
 import { familyMembers, medicines, prescriptions, initialDoses } from "../data/mockData";
 
 type Props = CompositeScreenProps<
@@ -17,11 +17,11 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const ink = "#0D0D0D";
-const grey = "#8A8A8A";
-const faint = "#B8B8B8";
-const hairline = "#EDEDED";
-const track = "#F2F2F2";
+const ink = colors.text;
+const grey = colors.textMuted;
+const faint = colors.textFaint;
+const hairline = colors.border;
+const track = colors.borderStrong;
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -146,7 +146,7 @@ export default function DashboardScreen({ navigation }: Props) {
                     {who?.id === me.id ? "You" : who?.name.split(" ")[0]} · {rx.date} · see it on the body
                   </Text>
                 </View>
-                <ChevronRightIcon color="#7A3E12" />
+                <ChevronRightIcon color={warm.sub} />
               </AnimatedPressable>
             );
           })}
@@ -269,7 +269,7 @@ function DoseRow({
         style={styles.tick}
       >
         <Animated.View style={[styles.tickFill, { opacity: fill, transform: [{ scale: fill }] }]}>
-          <CheckIcon size={13} color="#fff" />
+          <CheckIcon size={13} color={colors.bg} />
         </Animated.View>
       </Pressable>
     </View>
@@ -277,7 +277,7 @@ function DoseRow({
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  safe: { flex: 1, backgroundColor: colors.bg },
   topRow: {
     paddingHorizontal: 24,
     paddingTop: 14,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   rowMain: { flex: 1, flexDirection: "row", alignItems: "center", gap: 12 },
   timeCol: { width: 54 },
   timeBig: { fontSize: 18, fontWeight: "700", color: ink, letterSpacing: -0.5, fontVariant: ["tabular-nums"] },
-  timeSmall: { fontSize: 10, fontWeight: "700", color: "#9A9A9A", marginTop: 1, letterSpacing: 0.4 },
+  timeSmall: { fontSize: 10, fontWeight: "700", color: colors.textFaint, marginTop: 1, letterSpacing: 0.4 },
   rowBody: { flex: 1, gap: 2 },
   rowTitle: { fontSize: 15, fontWeight: "600", color: ink },
   rowTitleDone: { color: faint, textDecorationLine: "line-through" },
@@ -358,9 +358,9 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 14,
     borderRadius: 16,
-    backgroundColor: "#FCE3CF",
+    backgroundColor: warm.bg,
   },
-  screenDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: "#F59E5B", borderWidth: 3, borderColor: "#FFFFFF" },
-  screenTitle: { fontSize: 14, fontWeight: "700", color: "#2A1E16" },
-  screenSub: { fontSize: 12, color: "#7A3E12", marginTop: 2 },
+  screenDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: warm.dot, borderWidth: 3, borderColor: colors.bg },
+  screenTitle: { fontSize: 14, fontWeight: "700", color: warm.text },
+  screenSub: { fontSize: 12, color: warm.sub, marginTop: 2 },
 });

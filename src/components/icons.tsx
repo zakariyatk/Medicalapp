@@ -1,9 +1,10 @@
 import React from "react";
 import Svg, { Path, Circle, Line, Rect } from "react-native-svg";
+import { colors } from "../theme";
 
 type IconProps = { size?: number; color?: string; strokeWidth?: number };
 
-export function BackIcon({ size = 16, color = "#1C2430", strokeWidth = 2 }: IconProps) {
+export function BackIcon({ size = 16, color = colors.text, strokeWidth = 2 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M15 5l-7 7 7 7" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
@@ -11,7 +12,7 @@ export function BackIcon({ size = 16, color = "#1C2430", strokeWidth = 2 }: Icon
   );
 }
 
-export function ChevronRightIcon({ size = 16, color = "#C7CDD4" }: IconProps) {
+export function ChevronRightIcon({ size = 16, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 6l6 6-6 6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
@@ -19,7 +20,7 @@ export function ChevronRightIcon({ size = 16, color = "#C7CDD4" }: IconProps) {
   );
 }
 
-export function PlusIcon({ size = 16, color = "#0F766E" }: IconProps) {
+export function PlusIcon({ size = 16, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 5v14M5 12h14" stroke={color} strokeWidth={2.3} strokeLinecap="round" />
@@ -27,7 +28,7 @@ export function PlusIcon({ size = 16, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function CheckIcon({ size = 12, color = "#0F766E" }: IconProps) {
+export function CheckIcon({ size = 12, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M5 13l4 4L19 7" stroke={color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
@@ -35,7 +36,7 @@ export function CheckIcon({ size = 12, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function HomeIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
+export function HomeIcon({ size = 20, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -48,7 +49,7 @@ export function HomeIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function UsersIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
+export function UsersIcon({ size = 20, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="9" cy="8" r="3.2" stroke={color} strokeWidth={1.8} />
@@ -59,7 +60,7 @@ export function UsersIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function RecordsIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
+export function RecordsIcon({ size = 20, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M7 4h7l3 3v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
@@ -68,7 +69,7 @@ export function RecordsIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function ProfileIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
+export function ProfileIcon({ size = 20, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="8.5" r="3.3" stroke={color} strokeWidth={1.8} />
@@ -91,7 +92,7 @@ export function CameraIcon({ size = 20, color = "#fff" }: IconProps) {
   );
 }
 
-export function BellIcon({ size = 19, color = "#1C2430" }: IconProps) {
+export function BellIcon({ size = 19, color = colors.text }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M18 8a6 6 0 1 0-12 0c0 3-1 5-2 6h16c-1-1-2-3-2-6Z" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
@@ -100,7 +101,7 @@ export function BellIcon({ size = 19, color = "#1C2430" }: IconProps) {
   );
 }
 
-export function CapsuleIcon({ size = 22, color = "#0F766E" }: IconProps) {
+export function CapsuleIcon({ size = 22, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="4" y="9" width="16" height="7" rx="3.5" stroke={color} strokeWidth={1.8} />
@@ -109,7 +110,7 @@ export function CapsuleIcon({ size = 22, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function TabletIcon({ size = 22, color = "#B45309" }: IconProps) {
+export function TabletIcon({ size = 22, color = colors.amber }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="7" y="4" width="10" height="16" rx="5" stroke={color} strokeWidth={1.8} />
@@ -118,7 +119,7 @@ export function TabletIcon({ size = 22, color = "#B45309" }: IconProps) {
   );
 }
 
-export function SachetIcon({ size = 22, color = "#4F46E5" }: IconProps) {
+export function SachetIcon({ size = 22, color = colors.indigo }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M8 4h8l2 4v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19V8l2-4Z" stroke={color} strokeWidth={1.7} strokeLinejoin="round" />
@@ -126,7 +127,7 @@ export function SachetIcon({ size = 22, color = "#4F46E5" }: IconProps) {
   );
 }
 
-export function DocIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
+export function DocIcon({ size = 20, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke={color} strokeWidth={1.5} strokeLinejoin="round" />
@@ -135,7 +136,7 @@ export function DocIcon({ size = 20, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function HospitalIcon({ size = 16, color = "#9AA3AE" }: IconProps) {
+export function HospitalIcon({ size = 16, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M4 21V9l8-6 8 6v12" stroke={color} strokeWidth={1.6} strokeLinejoin="round" />
@@ -144,7 +145,7 @@ export function HospitalIcon({ size = 16, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function CalendarIcon({ size = 16, color = "#9AA3AE" }: IconProps) {
+export function CalendarIcon({ size = 16, color = colors.textFaint }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke={color} strokeWidth={1.6} />
@@ -153,7 +154,7 @@ export function CalendarIcon({ size = 16, color = "#9AA3AE" }: IconProps) {
   );
 }
 
-export function DoctorIcon({ size = 22, color = "#0F766E" }: IconProps) {
+export function DoctorIcon({ size = 22, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 3a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Z" stroke={color} strokeWidth={1.7} />
@@ -162,7 +163,7 @@ export function DoctorIcon({ size = 22, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function WarningIcon({ size = 15, color = "#B45309" }: IconProps) {
+export function WarningIcon({ size = 15, color = colors.amber }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 4l9 15H3L12 4Z" stroke={color} strokeWidth={1.6} strokeLinejoin="round" />
@@ -171,7 +172,7 @@ export function WarningIcon({ size = 15, color = "#B45309" }: IconProps) {
   );
 }
 
-export function DangerIcon({ size = 15, color = "#B91C1C" }: IconProps) {
+export function DangerIcon({ size = 15, color = colors.red }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth={1.7} />
@@ -180,7 +181,7 @@ export function DangerIcon({ size = 15, color = "#B91C1C" }: IconProps) {
   );
 }
 
-export function ShareIcon({ size = 15, color = "#1C2430" }: IconProps) {
+export function ShareIcon({ size = 15, color = colors.text }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="6" cy="12" r="2.4" stroke={color} strokeWidth={1.6} />
@@ -191,7 +192,7 @@ export function ShareIcon({ size = 15, color = "#1C2430" }: IconProps) {
   );
 }
 
-export function EditIcon({ size = 15, color = "#1C2430" }: IconProps) {
+export function EditIcon({ size = 15, color = colors.text }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M4 20h4l10-10-4-4L4 16v4Z" stroke={color} strokeWidth={1.7} strokeLinejoin="round" />
@@ -199,7 +200,7 @@ export function EditIcon({ size = 15, color = "#1C2430" }: IconProps) {
   );
 }
 
-export function TrashIcon({ size = 15, color = "#B91C1C" }: IconProps) {
+export function TrashIcon({ size = 15, color = colors.red }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -213,7 +214,7 @@ export function TrashIcon({ size = 15, color = "#B91C1C" }: IconProps) {
   );
 }
 
-export function XIcon({ size = 16, color = "#1C2430" }: IconProps) {
+export function XIcon({ size = 16, color = colors.text }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M6 6l12 12M18 6L6 18" stroke={color} strokeWidth={2} strokeLinecap="round" />
@@ -221,7 +222,7 @@ export function XIcon({ size = 16, color = "#1C2430" }: IconProps) {
   );
 }
 
-export function CheckCircleIcon({ size = 16, color = "#0F766E" }: IconProps) {
+export function CheckCircleIcon({ size = 16, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 12.5l2 2 4.5-5" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
@@ -230,7 +231,7 @@ export function CheckCircleIcon({ size = 16, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function SparkleIcon({ size = 14, color = "#0F766E" }: IconProps) {
+export function SparkleIcon({ size = 14, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -253,7 +254,7 @@ export function DocumentIcon({ size = 16, color = "#fff" }: IconProps) {
   );
 }
 
-export function FlaskIcon({ size = 20, color = "#4F46E5" }: IconProps) {
+export function FlaskIcon({ size = 20, color = colors.indigo }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 3h6M10 3v6.5L5.5 18a2 2 0 0 0 1.8 2.9h9.4a2 2 0 0 0 1.8-2.9L14 9.5V3" stroke={color} strokeWidth={1.7} strokeLinejoin="round" />
@@ -271,7 +272,7 @@ export function GalleryIcon({ size = 16, color = "#fff" }: IconProps) {
   );
 }
 
-export function HeartIcon({ size = 22, color = "#0F766E" }: IconProps) {
+export function HeartIcon({ size = 22, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -298,7 +299,7 @@ export function HeartPulseIcon({ size = 18, color = "#E4435A" }: IconProps) {
   );
 }
 
-export function LungsIcon({ size = 24, color = "#0F766E" }: IconProps) {
+export function LungsIcon({ size = 24, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 3v7.5" stroke={color} strokeWidth={1.7} strokeLinecap="round" />
@@ -319,7 +320,7 @@ export function LungsIcon({ size = 24, color = "#0F766E" }: IconProps) {
   );
 }
 
-export function BrainIcon({ size = 24, color = "#0F766E" }: IconProps) {
+export function BrainIcon({ size = 24, color = colors.primary }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
