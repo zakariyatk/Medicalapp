@@ -7,6 +7,7 @@ export type RootStackParamList = {
   MedicineDetail: { medicineId: string; prescriptionId?: string; memberId?: string };
   AddEditRecord: { memberId?: string; recordId?: string; recordType?: "Prescription" | "Lab report" | "Vaccination" };
   FamilyMembers: undefined;
+  Specialists: undefined;
 };
 
 export type MainTabsParamList = {

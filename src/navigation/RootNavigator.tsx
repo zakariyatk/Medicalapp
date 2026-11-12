@@ -9,6 +9,7 @@ import CapturePrescriptionScreen from "../screens/CapturePrescriptionScreen";
 import PrescriptionDetailScreen from "../screens/PrescriptionDetailScreen";
 import MedicineDetailScreen from "../screens/MedicineDetailScreen";
 import AddEditRecordScreen from "../screens/AddEditRecordScreen";
+import SpecialistsScreen from "../screens/SpecialistsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -23,6 +24,7 @@ export default function RootNavigator() {
       <Stack.Screen name="PrescriptionDetail" component={PrescriptionDetailScreen} />
       <Stack.Screen name="MedicineDetail" component={MedicineDetailScreen} />
       <Stack.Screen name="AddEditRecord" component={AddEditRecordScreen} options={{ presentation: "formSheet" }} />
+      <Stack.Screen name="Specialists" component={SpecialistsScreen} />
     </Stack.Navigator>
   );
 }
